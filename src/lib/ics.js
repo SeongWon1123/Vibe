@@ -1,12 +1,41 @@
+function pad(value) {
+  return String(value).padStart(2, '0')
+}
+
+function parseWallClock(date, time = '09:00') {
+  const [year, month, day] = date.split('-').map(Number)
+  const [hour, minute] = time.split(':').map(Number)
+  return { year, month, day, hour: hour || 0, minute: minute || 0 }
+}
+
+function formatIcsLocal({ year, month, day, hour, minute }) {
+  return `${year}${pad(month)}${pad(day)}T${pad(hour)}${pad(minute)}00`
+}
+
+function addHours(parts, hours) {
+  const next = new Date(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute)
+  next.setHours(next.getHours() + hours)
+  return {
+    year: next.getFullYear(),
+    month: next.getMonth() + 1,
+    day: next.getDate(),
+    hour: next.getHours(),
+    minute: next.getMinutes(),
+  }
+}
+
 export function buildIcs({ title, date, time = '09:00', location = '' }) {
-  const dt = date.replace(/-/g, '') + 'T' + time.replace(':', '') + '00'
+  const start = parseWallClock(date, time)
+  const dtStart = formatIcsLocal(start)
+  const dtEnd = formatIcsLocal(addHours(start, 1))
   return [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
     'PRODID:-//DongHak//KR',
     'BEGIN:VEVENT',
     `UID:${Date.now()}@donghak`,
-    `DTSTART;TZID=Asia/Seoul:${dt}`,
+    `DTSTART;TZID=Asia/Seoul:${dtStart}`,
+    `DTEND;TZID=Asia/Seoul:${dtEnd}`,
     `SUMMARY:${title}`,
     location ? `LOCATION:${location}` : '',
     'BEGIN:VALARM',

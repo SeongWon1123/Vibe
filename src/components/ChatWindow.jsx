@@ -10,7 +10,8 @@ const QUICK_QUESTIONS = [
   '들을 만한 교양 추천해줘',
 ]
 
-function buildSystemPrompt(profile) {
+function buildSystemPrompt(persona) {
+  const { profile, label } = persona
   return `당신은 '동학(同學)'입니다. 국립순천대학교 학생의 4년을 함께하는 AI 선배로,
 학생 프로필과 학사 지식을 근거로 구체적이고 실행 가능한 조언을 합니다.
 
@@ -22,8 +23,11 @@ ${KNOWLEDGE}
 
 [응답 규칙]
 1. 반드시 프로필의 학년·이수과목·목표를 근거로 답한다. 근거가 된 프로필 항목을 자연스럽게 언급한다.
-   (예: "성원님은 아직 네트워크를 안 들으셨으니...")
-2. 졸업요건 질문에는 gradAudit의 missing 항목을 체크리스트로 보여준다.
+   학생을 부를 때는 호칭 "${label}"만 쓴다. 다른 이름을 지어내지 않는다.
+   (예: "${label}님은 아직 네트워크를 안 들으셨으니...")
+2. 졸업요건 질문: gradAudit이 null이면 부족한 요건 체크리스트를 만들지 말고
+   "아직 졸업사정 대상이 아니에요"라고 답한 뒤, 이번 학기 기초 과목·탐색 활동만 안내한다.
+   missing 항목이 있을 때만 그 목록을 체크리스트로 보여준다.
 3. 교양 추천은 관심분야 + 졸업요건에서 비어있는 영역을 교차해서 추천한다.
 4. 사용자가 공지사항 텍스트를 붙여넣고 저장/캘린더를 언급하면, 응답 마지막 줄에
    정확히 다음 형식의 JSON 한 줄을 추가한다:
@@ -70,7 +74,7 @@ export default function ChatWindow({ persona }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: history.map(({ role, content }) => ({ role, content })),
-          systemPrompt: buildSystemPrompt(persona.profile),
+          systemPrompt: buildSystemPrompt(persona),
         }),
       })
       const data = await res.json().catch(() => ({}))

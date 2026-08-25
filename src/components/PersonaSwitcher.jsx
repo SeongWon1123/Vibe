@@ -50,8 +50,11 @@ export default function PersonaSwitcher({ personas, selectedId, onSelect }) {
           <div>
             <dt className="text-stone-400">이수</dt>
             <dd>
-              {profile.gradAudit?.totalCredits ?? '-'}학점
-              {missing.length ? ` · 부족 ${missing.length}` : ''}
+              {profile.gradAudit
+                ? `${profile.gradAudit.totalCredits}학점${
+                    missing.length ? ` · 부족 ${missing.length}` : ''
+                  }`
+                : '졸업사정 전'}
             </dd>
           </div>
         </dl>

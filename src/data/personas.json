@@ -8,10 +8,7 @@
       "interests": ["아직 탐색 중", "게임 개발에 막연한 흥미"],
       "goal": "미정",
       "completedCourses": ["프로그래밍기초"],
-      "gradAudit": {
-        "totalCredits": 16,
-        "missing": ["교양 영역 탐색", "1학년 2학기 전공기초"]
-      }
+      "gradAudit": null
     }
   },
   {
