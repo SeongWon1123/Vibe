@@ -150,12 +150,19 @@ export default function ChatWindow({ persona }) {
             </button>
           ))}
         </div>
-        <form onSubmit={handleSubmit} className="flex gap-2">
-          <input
+        <form onSubmit={handleSubmit} className="flex items-end gap-2">
+          <textarea
             value={input}
             onChange={(event) => setInput(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault()
+                send(input)
+              }
+            }}
             placeholder="궁금한 점을 물어보세요"
-            className="min-w-0 flex-1 rounded-xl border border-stone-300 px-3 py-2.5 text-sm outline-none focus:border-navy"
+            rows={2}
+            className="min-w-0 flex-1 resize-none rounded-xl border border-stone-300 px-3 py-2.5 text-sm outline-none focus:border-navy"
           />
           <button
             type="submit"
