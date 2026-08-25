@@ -2,7 +2,7 @@ import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url))
 
@@ -61,10 +61,17 @@ function vercelApiDev() {
   }
 }
 
-export default defineConfig({
-  plugins: [react(), tailwindcss(), vercelApiDev()],
-  server: {
-    host: true,
-    port: 3000,
-  },
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, rootDir, '')
+  for (const key of ['LLM_API_KEY', 'LLM_BASE_URL', 'LLM_MODEL']) {
+    if (env[key]) process.env[key] = env[key]
+  }
+
+  return {
+    plugins: [react(), tailwindcss(), vercelApiDev()],
+    server: {
+      host: true,
+      port: 3000,
+    },
+  }
 })
