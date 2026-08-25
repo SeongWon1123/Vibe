@@ -33,7 +33,7 @@ export default function IcsButton({ event }) {
         {location ? ` · ${location}` : ''}
       </span>
       <button type="button" className="dl" onClick={handleSave}>
-        이 일정을 폰 캘린더에 넣기
+        캘린더에 넣기
       </button>
     </div>
   )

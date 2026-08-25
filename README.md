@@ -41,7 +41,15 @@ npm run dev
 
 브라우저: http://localhost:3000
 
-`.env.local`의 `LLM_API_KEY`를 실제 키로 바꾼 뒤에 채팅이 살아납니다. 키가 없으면 UI는 뜨고 답은 더미입니다.
+`.env.local` 예시 (OpenRouter):
+
+```
+LLM_API_KEY=sk-or-v1-여기에키
+LLM_BASE_URL=https://openrouter.ai/api/v1
+LLM_MODEL=openai/gpt-4o-mini
+```
+
+키만 넣고 주소를 xAI로 두면 연결이 안 됩니다. `sk-or-`로 시작하는 키는 OpenRouter 주소로 붙습니다. 저장한 뒤 채팅을 다시 보내면 됩니다. 키가 없으면 로컬 답으로 대체됩니다.
 
 ## 계획 문서
 

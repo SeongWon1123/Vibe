@@ -1,15 +1,14 @@
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
-@import url("https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&display=swap");
 @import "tailwindcss";
 
 :root {
-  --paper: #f3ead8;
-  --ink: #1b1712;
-  --ink-soft: #6a6358;
-  --line: #d7c8ae;
-  --pine: #2a4336;
-  --stamp: #c45b4a;
-  --rule: #e4d6bf;
+  --bg: #f2f3f7;
+  --card: #ffffff;
+  --ink: #111213;
+  --muted: #73757a;
+  --line: #e6e7ec;
+  --red: #e11d2e;
+  --red-soft: #fff1f2;
 }
 
 * {
@@ -25,9 +24,9 @@ body,
 body {
   margin: 0;
   color: var(--ink);
-  background: #e7dcc6;
+  background: var(--bg);
   font-family: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", sans-serif;
-  letter-spacing: -0.018em;
+  letter-spacing: -0.024em;
 }
 
 button,
@@ -39,226 +38,186 @@ input {
 .desk {
   height: 100svh;
   display: grid;
-  grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+  grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
   overflow: hidden;
 }
 
 .panel {
   overflow: auto;
-  padding: 26px 22px 16px;
-  background: #efe4cf;
+  padding: 22px 18px 18px;
+  background: var(--card);
+  border-right: 1px solid var(--line);
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
-.mark {
+.brand {
   display: flex;
-  gap: 12px;
-  align-items: flex-start;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.seal {
-  width: 38px;
-  height: 38px;
-  flex-shrink: 0;
-  display: grid;
-  place-items: center;
-  border: 1.5px solid var(--stamp);
-  color: var(--stamp);
-  background: transparent;
-  font-family: "Noto Serif KR", serif;
-  font-size: 18px;
-  font-weight: 700;
-  transform: rotate(-6deg);
-  opacity: 0.9;
-}
-
-.wordmark {
+.logo {
   margin: 0;
-  font-family: "Noto Serif KR", serif;
-  font-size: 30px;
-  line-height: 1;
-  font-weight: 700;
+  font-size: 22px;
+  font-weight: 800;
   letter-spacing: -0.06em;
 }
 
-.wordmark em {
-  font-style: normal;
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  color: var(--ink-soft);
-  margin-left: 4px;
-}
-
 .tag {
-  margin: 8px 0 0;
-  color: var(--ink-soft);
+  margin: 0;
+  color: var(--muted);
   font-size: 13px;
-  line-height: 1.5;
 }
 
 .year-row {
-  display: flex;
-  gap: 18px;
-  border-bottom: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  background: var(--bg);
+  padding: 4px;
+  border-radius: 14px;
 }
 
 .year {
-  height: 36px;
-  padding: 0;
+  height: 40px;
   border: 0;
-  background: none;
-  color: var(--ink-soft);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
   cursor: pointer;
-  font-size: 14px;
+  font-size: 16px;
+  font-weight: 700;
 }
 
 .year.on {
-  color: var(--ink);
-  box-shadow: inset 0 -2px 0 var(--ink);
+  background: var(--ink);
+  color: #fff;
 }
 
-.now {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
+.id-card {
+  padding: 4px 2px 0;
 }
 
-.now span {
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  color: var(--ink-soft);
+.id-kicker {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
 }
 
-.now strong {
-  font-family: "Noto Serif KR", serif;
-  font-size: 16px;
-  font-weight: 600;
+.id-name {
+  margin: 6px 0 0;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.05em;
 }
 
-.who-line {
-  margin: -8px 0 0;
-  font-size: 13px;
-  color: var(--ink-soft);
+.id-meta,
+.id-credits {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: var(--muted);
 }
 
 .gaps {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin: 0;
+  gap: 6px;
+  margin: 10px 0 0;
   padding: 0;
   list-style: none;
 }
 
 .gaps li {
   font-size: 12px;
-  color: var(--stamp);
-}
-
-.urgent,
-.paste {
-  padding: 0;
-  background: transparent;
-  border: 0;
+  font-weight: 650;
+  padding: 5px 8px;
+  border-radius: 8px;
+  background: var(--red-soft);
+  color: var(--red);
 }
 
 .urgent h2,
 .paste h2 {
-  margin: 0 0 6px;
-  font-size: 11px;
+  margin: 0 0 8px;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  color: var(--ink-soft);
 }
 
 .job {
   display: block;
   width: 100%;
   text-align: left;
-  border: 0;
-  border-top: 1px solid var(--line);
-  background: transparent;
-  padding: 10px 0;
+  border: 1px solid var(--line);
+  background: var(--card);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
   cursor: pointer;
 }
 
-.job:hover .what {
-  color: var(--stamp);
+.job:hover {
+  border-color: #cfd1d8;
 }
 
 .when {
   display: block;
   font-size: 11px;
-  color: var(--stamp);
+  font-weight: 700;
+  color: var(--red);
 }
 
 .what {
   display: block;
   margin-top: 2px;
   font-size: 15px;
-  font-weight: 650;
+  font-weight: 750;
 }
 
 .why {
   display: block;
-  margin-top: 3px;
-  font-size: 12px;
-  color: var(--ink-soft);
-  line-height: 1.45;
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.4;
 }
 
 .paste {
-  margin-top: 4px;
-  padding-top: 12px;
-  border-top: 1px dashed var(--line);
+  margin-top: auto;
 }
 
 .paste textarea {
   width: 100%;
-  min-height: 84px;
+  min-height: 88px;
   resize: vertical;
-  border: 0;
-  border-bottom: 1px solid var(--line);
-  background: transparent;
-  padding: 8px 0;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 12px;
   outline: none;
 }
 
+.paste textarea:focus {
+  border-color: var(--ink);
+  background: #fff;
+}
+
 .go {
-  margin-top: 12px;
-  display: inline-block;
-  height: auto;
-  padding: 0;
+  margin-top: 8px;
+  width: 100%;
+  height: 44px;
   border: 0;
-  background: none;
-  color: var(--pine);
+  border-radius: 12px;
+  background: var(--ink);
+  color: #fff;
   cursor: pointer;
   font-weight: 700;
-  font-size: 15px;
-  text-decoration: underline;
-  text-underline-offset: 5px;
-  text-decoration-thickness: 1.5px;
 }
 
 .go:hover {
-  color: var(--ink);
-}
-
-.hint {
-  margin: 8px 0 0;
-  font-size: 12px;
-  line-height: 1.45;
-  color: var(--ink-soft);
-}
-
-.foot {
-  margin-top: auto;
-  padding-top: 10px;
-  font-size: 11px;
-  color: #8d8578;
+  background: #000;
 }
 
 .talk {
@@ -266,55 +225,53 @@ input {
   flex-direction: column;
   min-width: 0;
   height: 100svh;
-  background-color: #f7f0e2;
-  background-image:
-    linear-gradient(90deg, transparent 52px, #e8b7aa 52px, #e8b7aa 53px, transparent 53px),
-    repeating-linear-gradient(to bottom, transparent 0 31px, var(--rule) 31px 32px);
+  background: var(--bg);
 }
 
 .thread {
   flex: 1;
   overflow: auto;
-  padding: 28px 36px 12px 72px;
+  padding: 24px 24px 8px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 12px;
 }
 
 .bubble {
-  max-width: min(560px, 100%);
-  padding: 0;
-  line-height: 1.75;
+  max-width: min(560px, 88%);
+  padding: 12px 14px;
+  line-height: 1.65;
   font-size: 15px;
-  background: none;
-  border: 0;
-  box-shadow: none;
+  border-radius: 18px;
 }
 
 .bubble.me {
   margin-left: auto;
-  color: var(--stamp);
-  font-weight: 650;
+  background: var(--ink);
+  color: #fff;
+  border-bottom-right-radius: 6px;
   white-space: pre-wrap;
 }
 
 .bubble.you {
-  color: var(--ink);
+  background: var(--card);
+  border-bottom-left-radius: 6px;
 }
 
 .clip {
-  max-width: min(560px, 100%);
+  max-width: min(560px, 88%);
   margin-left: auto;
-  padding: 0;
-  background: none;
-  color: var(--ink);
+  background: var(--ink);
+  color: #fff;
+  border-radius: 18px;
+  border-bottom-right-radius: 6px;
+  padding: 12px 14px;
 }
 
 .clip span {
   display: block;
   font-size: 11px;
-  letter-spacing: 0.08em;
-  color: var(--stamp);
+  opacity: 0.6;
 }
 
 .clip p {
@@ -324,13 +281,14 @@ input {
 }
 
 .typing {
-  color: var(--ink-soft);
+  color: var(--muted);
   font-size: 13px;
+  padding-left: 6px;
 }
 
 .markdown-body {
   font-size: 15px;
-  line-height: 1.75;
+  line-height: 1.65;
 }
 
 .markdown-body > *:first-child {
@@ -342,88 +300,79 @@ input {
 }
 
 .markdown-body p {
-  margin: 0 0 0.55em;
+  margin: 0 0 0.5em;
 }
 
 .markdown-body ul,
 .markdown-body ol {
-  margin: 0.15em 0 0.55em;
+  margin: 0.1em 0 0.5em;
   padding-left: 1.15em;
 }
 
 .slip {
-  max-width: min(560px, 100%);
-  margin-top: 6px;
-  padding: 2px 0 0;
-  background: none;
-  border: 0;
-  border-top: 1px solid var(--line);
+  max-width: min(560px, 88%);
+  margin-top: 8px;
+  background: var(--card);
+  border-radius: 16px;
+  padding: 14px;
 }
 
 .slip b {
   display: block;
-  font-family: "Noto Serif KR", serif;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 800;
 }
 
 .slip span {
   display: block;
   margin-top: 4px;
   font-size: 13px;
-  color: var(--ink-soft);
+  color: var(--muted);
 }
 
 .dl {
-  margin-top: 8px;
-  height: auto;
-  padding: 0;
+  margin-top: 12px;
+  width: 100%;
+  height: 40px;
   border: 0;
-  background: none;
-  color: var(--pine);
+  border-radius: 10px;
+  background: var(--red);
+  color: #fff;
   cursor: pointer;
   font-weight: 700;
-  text-decoration: underline;
-  text-underline-offset: 3px;
 }
 
 .composer {
-  padding: 0 28px 18px 72px;
-  background: linear-gradient(180deg, transparent, #f7f0e2 30%);
+  padding: 8px 16px 16px;
 }
 
 .chips {
   display: flex;
-  gap: 16px;
+  gap: 8px;
   overflow: auto;
-  padding: 8px 0 10px;
+  padding: 4px 0 10px;
 }
 
 .chip {
   flex: 0 0 auto;
-  height: auto;
-  padding: 0;
+  height: 34px;
+  padding: 0 12px;
   border: 0;
-  background: none;
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--ink);
   cursor: pointer;
   font-size: 13px;
-  color: var(--ink-soft);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.chip:hover {
-  color: var(--ink);
+  font-weight: 600;
 }
 
 .bar {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   align-items: flex-end;
-  background: transparent;
-  border: 0;
-  border-top: 1px solid var(--line);
-  padding: 10px 0 0;
+  background: var(--card);
+  border-radius: 18px;
+  padding: 8px 8px 8px 14px;
 }
 
 .bar textarea {
@@ -433,16 +382,17 @@ input {
   border: 0;
   resize: none;
   outline: none;
-  padding: 4px 0;
+  padding: 10px 0;
   background: transparent;
 }
 
 .send {
-  height: auto;
-  padding: 4px 0;
+  height: 40px;
+  padding: 0 16px;
   border: 0;
-  background: none;
-  color: var(--stamp);
+  border-radius: 12px;
+  background: var(--red);
+  color: #fff;
   cursor: pointer;
   font-weight: 700;
 }
@@ -466,16 +416,6 @@ input {
   }
 
   .thread {
-    padding: 20px 18px 8px 56px;
-  }
-
-  .composer {
-    padding: 0 16px 16px 56px;
-  }
-
-  .talk {
-    background-image:
-      linear-gradient(90deg, transparent 36px, #e8b7aa 36px, #e8b7aa 37px, transparent 37px),
-      repeating-linear-gradient(to bottom, transparent 0 31px, var(--rule) 31px 32px);
+    padding: 16px 14px 8px;
   }
 }

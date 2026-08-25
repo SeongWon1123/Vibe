@@ -15,6 +15,11 @@ function vercelApiDev() {
         const url = req.url?.split('?')[0]
         if (url !== '/api/chat') return next()
 
+        const env = loadEnv('development', rootDir, '')
+        for (const key of ['LLM_API_KEY', 'LLM_BASE_URL', 'LLM_MODEL']) {
+          if (env[key]) process.env[key] = env[key]
+        }
+
         try {
           const apiUrl = `${pathToFileURL(path.join(rootDir, 'api/chat.js')).href}?t=${Date.now()}`
           const { default: handler } = await import(apiUrl)

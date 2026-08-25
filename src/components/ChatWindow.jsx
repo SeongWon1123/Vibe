@@ -85,8 +85,12 @@ export default function ChatWindow({ persona, sendRef }) {
       })
       const data = await res.json().catch(() => ({}))
       let reply = data.reply
-      if (!reply || data.ok) {
+      if (data.ok && !reply) {
         reply = fallbackReply(persona, content)
+      } else if (!reply) {
+        reply = data.error
+          ? `연결이 안 됐어요. ${data.error}`
+          : fallbackReply(persona, content)
       }
       reply = attachLocalEvent(reply, content)
       setMessages((prev) => [...prev, { role: 'assistant', content: reply }])
@@ -142,7 +146,7 @@ export default function ChatWindow({ persona, sendRef }) {
             </div>
           )
         })}
-        {loading && <p className="typing">장부 보고 있습니다.</p>}
+        {loading && <p className="typing">보는 중</p>}
         <div ref={bottomRef} />
       </div>
 
@@ -164,7 +168,7 @@ export default function ChatWindow({ persona, sendRef }) {
                 send(input)
               }
             }}
-            placeholder="이번 학기, 졸업, 공지. 있는 그대로 적으면 됩니다."
+            placeholder="이번 학기, 졸업, 공지"
             rows={2}
           />
           <button className="send" type="submit" disabled={loading || !input.trim()}>
