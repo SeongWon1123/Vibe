@@ -1,19 +1,22 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import Markdown from 'react-markdown'
 import { KNOWLEDGE } from '../data/knowledge.js'
+import { eventFromNotice, icsLine } from '../lib/notice.js'
+import { givenName, localAdvice, openingNote } from '../lib/urgency.js'
 import { parseIcsPayload } from '../lib/ics.js'
 import IcsButton from './IcsButton.jsx'
 
-const QUICK_QUESTIONS = [
-  '이번 학기에 뭘 해야 할까?',
-  '졸업까지 뭐가 남았어?',
-  '들을 만한 교양 추천해줘',
+const QUICK = [
+  { send: '이번 학기에 뭘 해야 할까?', show: '이번 학기, 뭐가 급해' },
+  { send: '졸업까지 뭐가 남았어?', show: '졸업까지 뭐가 남음' },
+  { send: '들을 만한 교양 추천해줘', show: '교양 뭐가 비었어' },
 ]
 
 function buildSystemPrompt(persona) {
   const { profile, label } = persona
-  return `당신은 '동학(同學)'입니다. 국립순천대학교 학생의 4년을 함께하는 AI 선배로,
-학생 프로필과 학사 지식을 근거로 구체적이고 실행 가능한 조언을 합니다.
+  return `당신은 '동학(同學)'입니다. 국립순천대학교 과방에서 아래 학년을 보는 선배입니다.
+말투는 짧고 단정한 존댓말. 위로하지 말고, 지금 학기에 손댈 일만 말합니다.
+이모지, '도와드릴게요', '추가로 궁금한 점' 같은 챗봇 상투구는 쓰지 않습니다.
 
 [학생 프로필]
 ${JSON.stringify(profile, null, 2)}
@@ -22,37 +25,39 @@ ${JSON.stringify(profile, null, 2)}
 ${KNOWLEDGE}
 
 [응답 규칙]
-1. 반드시 프로필의 학년·이수과목·목표를 근거로 답한다. 근거가 된 프로필 항목을 자연스럽게 언급한다.
-   학생을 부를 때는 호칭 "${label}"만 쓴다. 다른 이름을 지어내지 않는다.
+1. 프로필의 학년·이수과목·목표를 근거로 답한다. 학생을 부를 때는 호칭 "${label}"만 쓴다.
    (예: "${label}님은 아직 네트워크를 안 들으셨으니...")
-2. 졸업요건 질문: gradAudit이 null이면 부족한 요건 체크리스트를 만들지 말고
-   "아직 졸업사정 대상이 아니에요"라고 답한 뒤, 이번 학기 기초 과목·탐색 활동만 안내한다.
-   missing 항목이 있을 때만 그 목록을 체크리스트로 보여준다.
-3. 교양 추천은 관심분야 + 졸업요건에서 비어있는 영역을 교차해서 추천한다.
-4. 사용자가 공지사항 텍스트를 붙여넣고 저장/캘린더를 언급하면, 응답 마지막 줄에
-   정확히 다음 형식의 JSON 한 줄을 추가한다:
+2. 졸업요건 질문: gradAudit이 null이면 체크리스트를 만들지 말고
+   "아직 졸업사정 대상이 아니에요"라고 한 뒤 이번 학기 기초만 안내한다.
+   missing이 있을 때만 그 항목을 체크리스트로 보여준다.
+3. 교양 추천은 관심분야와 비어 있는 영역을 교차해서 고른다.
+4. 공지를 붙여넣고 저장/캘린더를 말하면 마지막 줄에만:
    [ICS]{"title":"행사명","date":"YYYY-MM-DD","time":"HH:MM","location":"장소"}[/ICS]
-5. 답변은 한국어, 300자 내외, 마크다운 목록 활용. 모르는 것은 지어내지 말고
-   "학과 사무실 확인이 필요해요"라고 답한다.`
+5. 한국어, 300자 안팎, 마크다운 목록. 모르면 지어내지 말고 학과 사무실 확인이 필요해요.`
 }
 
-function greeting(label) {
-  return `안녕하세요, ${label}님! 무엇이 궁금한가요?`
+function toMarkdown(text) {
+  return text.replace(/\n/g, '  \n')
 }
 
-export default function ChatWindow({ persona }) {
-  const [messages, setMessages] = useState([])
+function isPastedNotice(content) {
+  return content.includes('접수 마감일 저장해줘') || content.length > 220
+}
+
+export default function ChatWindow({ persona, sendRef }) {
+  const [messages, setMessages] = useState(() => [
+    { role: 'assistant', content: openingNote(persona), greeting: true },
+  ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const bottomRef = useRef(null)
+  const loadingRef = useRef(false)
+  const messagesRef = useRef(messages)
 
-  useEffect(() => {
-    setMessages([
-      { role: 'assistant', content: greeting(persona.label), greeting: true },
-    ])
-    setInput('')
-    setLoading(false)
-  }, [persona.id, persona.label])
+  useLayoutEffect(() => {
+    messagesRef.current = messages
+    sendRef.current = send
+  })
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -60,12 +65,13 @@ export default function ChatWindow({ persona }) {
 
   async function send(text) {
     const content = text.trim()
-    if (!content || loading) return
+    if (!content || loadingRef.current) return
 
     const userMessage = { role: 'user', content }
-    const history = [...messages.filter((m) => !m.greeting), userMessage]
+    const history = [...messagesRef.current.filter((item) => !item.greeting), userMessage]
     setMessages((prev) => [...prev, userMessage])
     setInput('')
+    loadingRef.current = true
     setLoading(true)
 
     try {
@@ -73,25 +79,23 @@ export default function ChatWindow({ persona }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: history.map(({ role, content }) => ({ role, content })),
+          messages: history.map(({ role, content: body }) => ({ role, content: body })),
           systemPrompt: buildSystemPrompt(persona),
         }),
       })
       const data = await res.json().catch(() => ({}))
       let reply = data.reply
-      if (!reply && data.ok) {
-        reply = `(LLM 연결 예정) 질문: ${content}`
-      }
-      if (!reply) {
-        reply = '잠시 후 다시 시도해주세요'
+      if (!reply || data.ok) {
+        reply = fallbackReply(persona, content)
       }
       setMessages((prev) => [...prev, { role: 'assistant', content: reply }])
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: 'assistant', content: '잠시 후 다시 시도해주세요' },
+        { role: 'assistant', content: fallbackReply(persona, content) },
       ])
     } finally {
+      loadingRef.current = false
       setLoading(false)
     }
   }
@@ -102,59 +106,54 @@ export default function ChatWindow({ persona }) {
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
+    <section className="talk">
+      <div className="thread">
         {messages.map((message, index) => {
-          const parsed =
-            message.role === 'assistant' && !message.greeting
-              ? parseIcsPayload(message.content)
-              : { text: message.content, event: null }
-          const isUser = message.role === 'user'
+          if (message.role === 'user') {
+            if (isPastedNotice(message.content)) {
+              const firstLine = message.content.split('\n').find((line) => line.trim()) || '학과 공지'
+              return (
+                <article key={index} className="clip">
+                  <span>붙여 넣은 공지</span>
+                  <p>{firstLine}</p>
+                </article>
+              )
+            }
+            return (
+              <article key={index} className="bubble me">
+                {message.content}
+              </article>
+            )
+          }
+
+          const parsed = message.greeting
+            ? { text: message.content, event: null }
+            : parseIcsPayload(message.content)
+
           return (
-            <div key={index} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-              <div
-                className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
-                  isUser
-                    ? 'bg-navy text-white'
-                    : 'bg-white text-stone-800 shadow-sm ring-1 ring-stone-200'
-                }`}
-              >
-                {isUser ? (
-                  <p className="whitespace-pre-wrap">{parsed.text}</p>
-                ) : (
-                  <div className="markdown-body">
-                    <Markdown>{parsed.text}</Markdown>
-                  </div>
-                )}
-                <IcsButton event={parsed.event} />
-              </div>
+            <div key={index}>
+              <article className="bubble you">
+                <div className="markdown-body">
+                  <Markdown>{toMarkdown(parsed.text)}</Markdown>
+                </div>
+              </article>
+              <IcsButton event={parsed.event} />
             </div>
           )
         })}
-        {loading && (
-          <div className="flex justify-start">
-            <div className="rounded-2xl bg-white px-3.5 py-2.5 text-sm text-stone-400 shadow-sm ring-1 ring-stone-200">
-              생각 중…
-            </div>
-          </div>
-        )}
+        {loading && <p className="typing">장부 보고 있습니다.</p>}
         <div ref={bottomRef} />
       </div>
 
-      <div className="border-t border-stone-200 bg-white px-4 py-3">
-        <div className="mb-2 flex gap-1.5 overflow-x-auto pb-1">
-          {QUICK_QUESTIONS.map((question) => (
-            <button
-              key={question}
-              type="button"
-              onClick={() => send(question)}
-              className="shrink-0 rounded-full border border-navy/15 bg-stone-50 px-3 py-1 text-xs text-navy hover:bg-navy hover:text-white"
-            >
-              {question}
+      <div className="composer">
+        <div className="chips">
+          {QUICK.map((item) => (
+            <button key={item.send} type="button" className="chip" onClick={() => send(item.send)}>
+              {item.show}
             </button>
           ))}
         </div>
-        <form onSubmit={handleSubmit} className="flex items-end gap-2">
+        <form className="bar" onSubmit={handleSubmit}>
           <textarea
             value={input}
             onChange={(event) => setInput(event.target.value)}
@@ -164,19 +163,28 @@ export default function ChatWindow({ persona }) {
                 send(input)
               }
             }}
-            placeholder="궁금한 점을 물어보세요"
+            placeholder="이번 학기, 졸업, 공지. 있는 그대로 적으면 됩니다."
             rows={2}
-            className="min-w-0 flex-1 resize-none rounded-xl border border-stone-300 px-3 py-2.5 text-sm outline-none focus:border-navy"
           />
-          <button
-            type="submit"
-            disabled={loading || !input.trim()}
-            className="rounded-xl bg-navy px-4 py-2.5 text-sm font-medium text-white disabled:opacity-40"
-          >
-            전송
+          <button className="send" type="submit" disabled={loading || !input.trim()}>
+            보내기
           </button>
         </form>
       </div>
-    </div>
+    </section>
+  )
+}
+
+function fallbackReply(persona, content) {
+  const event = eventFromNotice(content)
+  if (event) {
+    return `이 공지에서 접수 마감만 집었습니다.
+캘린더에 넣으면 하루 전에 알림이 갑니다.
+
+${icsLine(event)}`
+  }
+  return (
+    localAdvice(persona, content) ||
+    `${givenName(persona.label)} 질문 기준으로는 장부에 없는 내용이에요. 학과 사무실 확인이 필요해요.`
   )
 }
