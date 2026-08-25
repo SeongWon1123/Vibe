@@ -1,11 +1,11 @@
 [
   {
     "id": "freshman",
-    "label": "1학년 김새내",
+    "label": "최성원",
     "profile": {
       "grade": 1,
       "semester": "1학년 2학기",
-      "interests": ["아직 탐색 중", "게임 개발에 막연한 흥미"],
+      "interests": ["아직 탐색 중", "개발이 맞는지만 보는 중"],
       "goal": "미정",
       "completedCourses": ["프로그래밍기초"],
       "gradAudit": null
@@ -13,11 +13,11 @@
   },
   {
     "id": "sophomore",
-    "label": "2학년 이전공",
+    "label": "최성원",
     "profile": {
       "grade": 2,
       "semester": "2학년 2학기",
-      "interests": ["웹 개발", "아직 트랙은 미정"],
+      "interests": ["웹", "인프라 쪽도 기웃"],
       "goal": "미정",
       "completedCourses": [
         "프로그래밍기초",
@@ -42,7 +42,7 @@
   },
   {
     "id": "junior",
-    "label": "3학년 박중견",
+    "label": "최성원",
     "profile": {
       "grade": 3,
       "semester": "3학년 2학기",
@@ -78,12 +78,12 @@
   },
   {
     "id": "senior",
-    "label": "4학년 최졸업",
+    "label": "최성원",
     "profile": {
       "grade": 4,
       "semester": "4학년 2학기",
-      "interests": ["AI", "데이터엔지니어링"],
-      "goal": "대학원 진학",
+      "interests": ["클라우드", "백엔드"],
+      "goal": "네이버클라우드 취업",
       "completedCourses": [
         "프로그래밍기초",
         "대학수학",

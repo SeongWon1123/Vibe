@@ -54,8 +54,42 @@ input {
 
 .brand {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.me {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.years-label {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.year-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  background: var(--bg);
+  padding: 4px;
+  border-radius: 14px;
+}
+
+.year {
+  height: 40px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .logo {
@@ -69,26 +103,6 @@ input {
   margin: 0;
   color: var(--muted);
   font-size: 13px;
-}
-
-.year-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  background: var(--bg);
-  padding: 4px;
-  border-radius: 14px;
-}
-
-.year {
-  height: 40px;
-  border: 0;
-  border-radius: 10px;
-  background: transparent;
-  color: var(--muted);
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: 700;
 }
 
 .year.on {
