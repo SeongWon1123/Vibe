@@ -88,11 +88,12 @@ export default function ChatWindow({ persona, sendRef }) {
       if (!reply || data.ok) {
         reply = fallbackReply(persona, content)
       }
+      reply = attachLocalEvent(reply, content)
       setMessages((prev) => [...prev, { role: 'assistant', content: reply }])
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: 'assistant', content: fallbackReply(persona, content) },
+        { role: 'assistant', content: attachLocalEvent(fallbackReply(persona, content), content) },
       ])
     } finally {
       loadingRef.current = false
@@ -173,6 +174,15 @@ export default function ChatWindow({ persona, sendRef }) {
       </div>
     </section>
   )
+}
+
+function attachLocalEvent(reply, userText) {
+  const local = eventFromNotice(userText)
+  if (!local) return reply
+  const parsed = parseIcsPayload(reply)
+  if (parsed.event?.date === local.date) return reply
+  const body = parsed.text?.trim() || reply
+  return `${body}\n\n${icsLine(local)}`
 }
 
 function fallbackReply(persona, content) {

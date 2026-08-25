@@ -228,7 +228,8 @@ input {
 }
 
 .go {
-  margin-top: 10px;
+  margin-top: 12px;
+  display: inline-block;
   height: auto;
   padding: 0;
   border: 0;
@@ -236,9 +237,10 @@ input {
   color: var(--pine);
   cursor: pointer;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 15px;
   text-decoration: underline;
-  text-underline-offset: 4px;
+  text-underline-offset: 5px;
+  text-decoration-thickness: 1.5px;
 }
 
 .go:hover {
@@ -291,7 +293,7 @@ input {
 
 .bubble.me {
   margin-left: auto;
-  color: var(--ink);
+  color: var(--stamp);
   font-weight: 650;
   white-space: pre-wrap;
 }

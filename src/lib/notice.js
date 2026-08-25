@@ -11,7 +11,7 @@ export function eventFromNotice(text) {
   const year = yearMatch ? 2000 + Number(yearMatch[1]) : 2026
 
   const deadline =
-    text.match(/접수\s*마감[^\d]{0,6}(\d{1,2})\s*월\s*(\d{1,2})\s*일/) ||
+    text.match(/접수\s*마감[^\d\n]{0,12}(\d{1,2})\s*월\s*(\d{1,2})\s*일/) ||
     text.match(/(\d{1,2})\s*월\s*(\d{1,2})\s*일\s*\([월화수목금토일]\)\s*까지/)
 
   if (!deadline) return null
