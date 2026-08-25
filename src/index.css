@@ -3,13 +3,13 @@
 @import "tailwindcss";
 
 :root {
-  --paper: #efe6d4;
-  --ink: #1a1712;
-  --ink-soft: #5e574c;
-  --line: #d4c6ae;
-  --pine: #2c4638;
-  --stamp: #b42318;
-  --cream: #fffaf1;
+  --paper: #f3ead8;
+  --ink: #1b1712;
+  --ink-soft: #6a6358;
+  --line: #d7c8ae;
+  --pine: #2a4336;
+  --stamp: #c45b4a;
+  --rule: #e4d6bf;
 }
 
 * {
@@ -25,9 +25,9 @@ body,
 body {
   margin: 0;
   color: var(--ink);
-  background: var(--paper);
+  background: #e7dcc6;
   font-family: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", sans-serif;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.018em;
 }
 
 button,
@@ -39,19 +39,17 @@ input {
 .desk {
   height: 100svh;
   display: grid;
-  grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+  grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
   overflow: hidden;
 }
 
 .panel {
   overflow: auto;
-  padding: 28px 22px 18px;
-  border-right: 1px solid var(--line);
-  background:
-    linear-gradient(180deg, #f6eee0 0%, #eadfcb 100%);
+  padding: 26px 22px 16px;
+  background: #efe4cf;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
 .mark {
@@ -61,79 +59,87 @@ input {
 }
 
 .seal {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   flex-shrink: 0;
   display: grid;
   place-items: center;
-  border: 2px solid var(--stamp);
+  border: 1.5px solid var(--stamp);
   color: var(--stamp);
-  background: #fff7f4;
+  background: transparent;
   font-family: "Noto Serif KR", serif;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
-  transform: rotate(-7deg);
+  transform: rotate(-6deg);
+  opacity: 0.9;
 }
 
 .wordmark {
   margin: 0;
   font-family: "Noto Serif KR", serif;
-  font-size: 32px;
+  font-size: 30px;
   line-height: 1;
-  letter-spacing: -0.05em;
+  font-weight: 700;
+  letter-spacing: -0.06em;
+}
+
+.wordmark em {
+  font-style: normal;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--ink-soft);
+  margin-left: 4px;
 }
 
 .tag {
-  margin: 6px 0 0;
+  margin: 8px 0 0;
   color: var(--ink-soft);
   font-size: 13px;
-  line-height: 1.45;
+  line-height: 1.5;
 }
 
 .year-row {
   display: flex;
-  gap: 6px;
+  gap: 18px;
+  border-bottom: 1px solid var(--line);
 }
 
 .year {
-  flex: 1;
-  height: 40px;
-  border: 1px solid transparent;
-  background: transparent;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  background: none;
   color: var(--ink-soft);
   cursor: pointer;
-}
-
-.year:hover {
-  color: var(--ink);
+  font-size: 14px;
 }
 
 .year.on {
-  background: var(--ink);
-  color: var(--cream);
+  color: var(--ink);
+  box-shadow: inset 0 -2px 0 var(--ink);
 }
 
 .now {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  padding-top: 4px;
-  border-top: 1px dashed var(--line);
 }
 
 .now span {
-  font-size: 12px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
   color: var(--ink-soft);
 }
 
 .now strong {
   font-family: "Noto Serif KR", serif;
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 600;
 }
 
 .who-line {
-  margin: -6px 0 0;
+  margin: -8px 0 0;
   font-size: 13px;
   color: var(--ink-soft);
 }
@@ -141,32 +147,30 @@ input {
 .gaps {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .gaps li {
-  font-size: 11px;
-  padding: 3px 7px;
-  border: 1px solid var(--stamp);
+  font-size: 12px;
   color: var(--stamp);
 }
 
 .urgent,
 .paste {
-  background: var(--cream);
-  border: 1px solid var(--line);
-  padding: 12px;
+  padding: 0;
+  background: transparent;
+  border: 0;
 }
 
 .urgent h2,
 .paste h2 {
-  margin: 0 0 8px;
+  margin: 0 0 6px;
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   color: var(--ink-soft);
 }
 
@@ -175,32 +179,26 @@ input {
   width: 100%;
   text-align: left;
   border: 0;
-  border-bottom: 1px solid #efe4d0;
+  border-top: 1px solid var(--line);
   background: transparent;
-  padding: 10px 2px;
+  padding: 10px 0;
   cursor: pointer;
 }
 
-.job:last-child {
-  border-bottom: 0;
-}
-
 .job:hover .what {
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  color: var(--stamp);
 }
 
 .when {
   display: block;
   font-size: 11px;
-  font-weight: 700;
   color: var(--stamp);
 }
 
 .what {
   display: block;
   margin-top: 2px;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 650;
 }
 
@@ -209,55 +207,56 @@ input {
   margin-top: 3px;
   font-size: 12px;
   color: var(--ink-soft);
-  line-height: 1.4;
+  line-height: 1.45;
+}
+
+.paste {
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line);
 }
 
 .paste textarea {
   width: 100%;
-  min-height: 88px;
+  min-height: 84px;
   resize: vertical;
-  border: 1px solid var(--line);
-  background: #fffdf8;
-  padding: 10px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  padding: 8px 0;
   outline: none;
 }
 
-.paste textarea:focus {
-  border-color: var(--pine);
-}
-
 .go {
-  margin-top: 8px;
-  width: 100%;
-  height: 40px;
+  margin-top: 10px;
+  height: auto;
+  padding: 0;
   border: 0;
-  background: var(--pine);
-  color: #f3f7f4;
+  background: none;
+  color: var(--pine);
   cursor: pointer;
-  font-weight: 650;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
 .go:hover {
-  background: #24382d;
-}
-
-.go:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+  color: var(--ink);
 }
 
 .hint {
   margin: 8px 0 0;
   font-size: 12px;
-  color: var(--ink-soft);
   line-height: 1.45;
+  color: var(--ink-soft);
 }
 
 .foot {
   margin-top: auto;
-  padding-top: 8px;
+  padding-top: 10px;
   font-size: 11px;
-  color: #8a8376;
+  color: #8d8578;
 }
 
 .talk {
@@ -265,73 +264,71 @@ input {
   flex-direction: column;
   min-width: 0;
   height: 100svh;
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      transparent 0 31px,
-      rgba(196, 176, 140, 0.18) 31px 32px
-    ),
-    #f7f1e6;
+  background-color: #f7f0e2;
+  background-image:
+    linear-gradient(90deg, transparent 52px, #e8b7aa 52px, #e8b7aa 53px, transparent 53px),
+    repeating-linear-gradient(to bottom, transparent 0 31px, var(--rule) 31px 32px);
 }
 
 .thread {
   flex: 1;
   overflow: auto;
-  padding: 28px 28px 8px;
+  padding: 28px 36px 12px 72px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 18px;
 }
 
 .bubble {
-  max-width: min(620px, 92%);
-  padding: 13px 16px;
-  line-height: 1.7;
+  max-width: min(560px, 100%);
+  padding: 0;
+  line-height: 1.75;
   font-size: 15px;
+  background: none;
+  border: 0;
+  box-shadow: none;
 }
 
 .bubble.me {
   margin-left: auto;
-  background: var(--ink);
-  color: #f6f1e6;
+  color: var(--ink);
+  font-weight: 650;
   white-space: pre-wrap;
 }
 
 .bubble.you {
-  background: #fffdf8;
-  border: 1px solid var(--line);
-  box-shadow: 0 10px 28px rgba(40, 28, 8, 0.05);
+  color: var(--ink);
 }
 
 .clip {
-  max-width: min(620px, 92%);
+  max-width: min(560px, 100%);
   margin-left: auto;
-  background: var(--ink);
-  color: #f6f1e6;
-  padding: 12px 14px;
+  padding: 0;
+  background: none;
+  color: var(--ink);
 }
 
 .clip span {
   display: block;
   font-size: 11px;
   letter-spacing: 0.08em;
-  opacity: 0.6;
+  color: var(--stamp);
 }
 
 .clip p {
   margin: 4px 0 0;
   font-size: 14px;
+  font-weight: 650;
 }
 
 .typing {
   color: var(--ink-soft);
   font-size: 13px;
-  padding-left: 4px;
 }
 
 .markdown-body {
   font-size: 15px;
-  line-height: 1.7;
+  line-height: 1.75;
 }
 
 .markdown-body > *:first-child {
@@ -343,25 +340,22 @@ input {
 }
 
 .markdown-body p {
-  margin: 0 0 0.6em;
+  margin: 0 0 0.55em;
 }
 
 .markdown-body ul,
 .markdown-body ol {
-  margin: 0.2em 0 0.6em;
-  padding-left: 1.2em;
-}
-
-.markdown-body li {
-  margin: 0.15em 0;
+  margin: 0.15em 0 0.55em;
+  padding-left: 1.15em;
 }
 
 .slip {
-  max-width: min(620px, 92%);
-  background: #fff;
-  border: 1px solid var(--line);
-  border-left: 3px solid var(--stamp);
-  padding: 14px 16px;
+  max-width: min(560px, 100%);
+  margin-top: 6px;
+  padding: 2px 0 0;
+  background: none;
+  border: 0;
+  border-top: 1px solid var(--line);
 }
 
 .slip b {
@@ -379,78 +373,76 @@ input {
 }
 
 .dl {
-  margin-top: 10px;
-  height: 36px;
-  padding: 0 12px;
-  border: 1px solid var(--pine);
-  background: transparent;
+  margin-top: 8px;
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: none;
   color: var(--pine);
   cursor: pointer;
-  font-weight: 650;
-}
-
-.dl:hover {
-  background: var(--pine);
-  color: #f4f7f4;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .composer {
-  padding: 4px 20px 18px;
+  padding: 0 28px 18px 72px;
+  background: linear-gradient(180deg, transparent, #f7f0e2 30%);
 }
 
 .chips {
   display: flex;
-  gap: 8px;
+  gap: 16px;
   overflow: auto;
-  padding: 6px 4px 10px;
+  padding: 8px 0 10px;
 }
 
 .chip {
   flex: 0 0 auto;
-  height: 34px;
-  padding: 0 12px;
-  border: 1px solid var(--line);
-  background: rgba(255, 253, 248, 0.9);
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: none;
   cursor: pointer;
   font-size: 13px;
+  color: var(--ink-soft);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .chip:hover {
-  border-color: var(--ink);
+  color: var(--ink);
 }
 
 .bar {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   align-items: flex-end;
-  background: #fffdf8;
-  border: 1px solid var(--line);
-  padding: 8px;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--line);
+  padding: 10px 0 0;
 }
 
 .bar textarea {
   flex: 1;
-  min-height: 48px;
-  max-height: 140px;
+  min-height: 44px;
+  max-height: 120px;
   border: 0;
   resize: none;
   outline: none;
-  padding: 8px;
+  padding: 4px 0;
   background: transparent;
 }
 
 .send {
-  height: 44px;
-  padding: 0 16px;
+  height: auto;
+  padding: 4px 0;
   border: 0;
-  background: var(--stamp);
-  color: #fff;
+  background: none;
+  color: var(--stamp);
   cursor: pointer;
   font-weight: 700;
-}
-
-.send:hover {
-  background: #92190f;
 }
 
 .send:disabled {
@@ -468,14 +460,20 @@ input {
 
   .talk {
     height: auto;
-    min-height: 72svh;
+    min-height: 70svh;
   }
 
   .thread {
-    padding: 18px 16px 8px;
+    padding: 20px 18px 8px 56px;
   }
 
   .composer {
-    padding: 4px 12px 16px;
+    padding: 0 16px 16px 56px;
+  }
+
+  .talk {
+    background-image:
+      linear-gradient(90deg, transparent 36px, #e8b7aa 36px, #e8b7aa 37px, transparent 37px),
+      repeating-linear-gradient(to bottom, transparent 0 31px, var(--rule) 31px 32px);
   }
 }

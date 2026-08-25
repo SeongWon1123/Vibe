@@ -14,7 +14,9 @@ export default function StudentPanel({ personas, selectedId, onSelect, onAsk, on
           同
         </span>
         <div>
-          <h1 className="wordmark">동학</h1>
+          <h1 className="wordmark">
+            동학 <em>同學</em>
+          </h1>
           <p className="tag">4학년이 되어서야 알게 되는 것들</p>
         </div>
       </div>
