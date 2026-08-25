@@ -15,7 +15,7 @@ export default function App() {
           selectedId={persona.id}
           onSelect={setSelectedId}
         />
-        <ChatWindow persona={persona} />
+        <ChatWindow key={persona.id} persona={persona} />
       </div>
     </div>
   )
