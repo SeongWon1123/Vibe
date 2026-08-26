@@ -1,18 +1,16 @@
 import { useCallback, useState } from 'react'
-import { KEYWORDS } from '../data/standard.js'
-import { standardFor } from '../lib/audit.js'
+import { KEYWORDS, semesterLabel } from '../data/standard.js'
 
-const KEY = 'donghak.profile.v2'
+const KEY = 'donghak.profile.v3'
 
 export function emptyProfile(grade = 1) {
-  const std = standardFor(grade)
   return {
     grade,
-    semester: std.semester,
+    semester: semesterLabel(grade),
     interests: [],
     goal: '아직 없음',
-    credits: std.credits,
-    timetable: std.timetable,
+    credits: { total: 0, major: 0, general: 0 },
+    timetable: [],
     keywords: [],
     portfolio: [],
     mode: 'senior',
@@ -25,7 +23,19 @@ function load() {
     const raw = localStorage.getItem(KEY)
     if (!raw) return null
     const p = JSON.parse(raw)
-    return p && p.credits && Array.isArray(p.timetable) ? p : null
+    return p && p.credits && Array.isArray(p.timetable) ? { ...emptyProfile(p.grade), ...p } : null
+  } catch {
+    return null
+  }
+}
+
+/** 전시·캡처용: ?p=<base64 json> 으로 프로필을 통째로 주입 */
+function fromLink() {
+  try {
+    const raw = new URLSearchParams(window.location.search).get('p')
+    if (!raw) return null
+    const p = JSON.parse(decodeURIComponent(escape(atob(raw))))
+    return { ...emptyProfile(p.grade || 1), ...p, onboarded: true }
   } catch {
     return null
   }
@@ -40,7 +50,7 @@ function save(profile) {
 }
 
 export function useProfile() {
-  const [profile, setProfileState] = useState(() => load() ?? emptyProfile(1))
+  const [profile, setProfileState] = useState(() => fromLink() ?? load() ?? emptyProfile(1))
 
   const update = useCallback((patch) => {
     setProfileState((prev) => {
@@ -50,14 +60,8 @@ export function useProfile() {
     })
   }, [])
 
-  /** 학년을 바꾸면 학점·시간표를 그 학년 표준값으로 다시 깔아 준다 (사용자가 다시 고칠 수 있음). */
-  const setGrade = useCallback(
-    (grade) => {
-      const std = standardFor(grade)
-      update({ grade, semester: std.semester, credits: std.credits, timetable: std.timetable })
-    },
-    [update],
-  )
+  /** 학년만 바꾼다. 학점·시간표는 사용자가 넣은 값이므로 건드리지 않는다. */
+  const setGrade = useCallback((grade) => update({ grade, semester: semesterLabel(grade) }), [update])
 
   const learn = useCallback(
     (text) => {

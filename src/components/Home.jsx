@@ -4,7 +4,7 @@ import { GRAD, PORTFOLIO, nextSteps, quickQuestions } from '../data/standard.js'
 import { audit } from '../lib/audit.js'
 import Mark from './Mark.jsx'
 import Scene from './Scene.jsx'
-import { TimetableGrid } from './Timetable.jsx'
+import { CurriculumCard, TimetableGrid } from './Timetable.jsx'
 
 function greeting(hour, week) {
   if (week === 0) return '방학 잘 보내고 있어?'
@@ -22,7 +22,7 @@ function insight(profile) {
   return '아직 관심 분야를 찾는 중. 상담할수록 동학이 너를 더 잘 알게 돼.'
 }
 
-export default function Home({ profile, update, onAsk, onGoChat, onOpenNotice, onEditTimetable }) {
+export default function Home({ profile, update, onAsk, onGoChat, onOpenNotice, onEditTimetable, onEditCredits }) {
   const now = new Date()
   const week = weekOfTerm(now)
   const events = upcoming(profile.grade, now, 3)
@@ -59,29 +59,59 @@ export default function Home({ profile, update, onAsk, onGoChat, onOpenNotice, o
         </div>
       </div>
 
-      <div className="ongoing">
-        <div className="ring" aria-hidden="true">
-          <svg viewBox="0 0 42 42">
-            <circle cx="21" cy="21" r="18" fill="none" stroke="#ECE7E1" strokeWidth="3.5" />
-            <circle cx="21" cy="21" r="18" fill="none" stroke="#E9C7B4" strokeWidth="3.5" strokeDasharray={dash} strokeDashoffset={dash - dash * a.expectedRatio} strokeLinecap="round" transform="rotate(-90 21 21)" />
-            <circle cx="21" cy="21" r="18" fill="none" stroke="var(--dusk)" strokeWidth="3.5" strokeDasharray={dash} strokeDashoffset={dash - dash * a.ratio} strokeLinecap="round" transform="rotate(-90 21 21)" />
-          </svg>
-          {Math.round(a.ratio * 100)}%
-        </div>
-        <div>
-          <b>
-            {profile.credits.total} / {GRAD.total}학점
-          </b>
-          <div className="meta">
-            이번 학기 +{a.planned} → 예상 {a.expected} · 남은 {a.remaining}학점
+      {a.entered ? (
+        <div className="ongoing">
+          <div className="ring" aria-hidden="true">
+            <svg viewBox="0 0 42 42">
+              <circle cx="21" cy="21" r="18" fill="none" stroke="#ECE7E1" strokeWidth="3.5" />
+              <circle cx="21" cy="21" r="18" fill="none" stroke="#E9C7B4" strokeWidth="3.5" strokeDasharray={dash} strokeDashoffset={dash - dash * a.expectedRatio} strokeLinecap="round" transform="rotate(-90 21 21)" />
+              <circle cx="21" cy="21" r="18" fill="none" stroke="var(--dusk)" strokeWidth="3.5" strokeDasharray={dash} strokeDashoffset={dash - dash * a.ratio} strokeLinecap="round" transform="rotate(-90 21 21)" />
+            </svg>
+            {Math.round(a.ratio * 100)}%
           </div>
-          <div className="rate">
-            전공 {profile.credits.major}/{GRAD.major} · 교양 {profile.credits.general}/{GRAD.general}
+          <div>
+            <b>
+              {profile.credits.total} / {GRAD.total}학점
+            </b>
+            <div className="meta">
+              이번 학기 +{a.planned} → 예상 {a.expected} · 남은 {a.remaining}학점
+            </div>
+            <div className="rate">
+              전공 {profile.credits.major}/{GRAD.major} · 교양 {profile.credits.general}/{GRAD.general}
+            </div>
           </div>
+          <button type="button" className="resume" onClick={() => onAsk('졸업까지 뭐가 남았어?')}>
+            자세히
+          </button>
         </div>
-        <button type="button" className="resume" onClick={() => onAsk('졸업까지 뭐가 남았어?')}>
-          자세히
+      ) : (
+        <button type="button" className="ongoing" style={{ width: 'calc(100% - 52px)', textAlign: 'left', border: '1px dashed var(--line)', background: '#fff' }} onClick={onEditCredits}>
+          <div className="ring" aria-hidden="true">?</div>
+          <div>
+            <b>이수 학점을 넣어 줘</b>
+            <div className="meta">향림통 성적 조회 숫자를 그대로. 졸업까지 남은 학점을 계산해 줄게.</div>
+          </div>
+          <span className="resume">입력</span>
         </button>
+      )}
+
+      <div className="sec">
+        <div className="sec-head">
+          <div className="sec-title">이번 학기 시간표</div>
+          <button type="button" className="more" onClick={onEditTimetable}>
+            {profile.timetable.length ? '편집' : '입력'}
+          </button>
+        </div>
+        {profile.timetable.length ? (
+          <TimetableGrid timetable={profile.timetable} compact />
+        ) : (
+          <button type="button" className="feed-tease" onClick={onEditTimetable}>
+            <p>시간표를 넣으면 교육과정과 대조해서 피드백해 줘요</p>
+          </button>
+        )}
+        <div style={{ marginTop: 10 }}>
+          <CurriculumCard profile={profile} onAsk={onAsk} />
+        </div>
       </div>
 
       <div className="sec">
@@ -141,22 +171,6 @@ export default function Home({ profile, update, onAsk, onGoChat, onOpenNotice, o
           </div>
         </div>
       )}
-
-      <div className="sec">
-        <div className="sec-head">
-          <div className="sec-title">이번 학기 시간표</div>
-          <button type="button" className="more" onClick={onEditTimetable}>
-            편집
-          </button>
-        </div>
-        {profile.timetable.length ? (
-          <TimetableGrid timetable={profile.timetable} compact />
-        ) : (
-          <button type="button" className="feed-tease" onClick={onEditTimetable}>
-            <p>시간표를 넣으면 과목·학점이 자동으로 반영돼요</p>
-          </button>
-        )}
-      </div>
 
       <div className="sec">
         <div className="sec-head">

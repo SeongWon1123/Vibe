@@ -13,7 +13,7 @@ import { MODES } from './lib/urgency.js'
 
 const TABS = new Set(['home', 'chat', 'notice', 'me'])
 
-/** 전시·캡처용 딥링크: ?screen=home&year=4&mode=mate&ask=포트폴리오 뭐부터 정리해? */
+/** 딥링크: ?screen=home&year=3&mode=mate&ask=…  (&p=<base64 프로필>은 useProfile이 읽는다) */
 function readDeepLink() {
   const params = new URLSearchParams(window.location.search)
   const screen = params.get('screen')
@@ -35,34 +35,23 @@ export default function App() {
     applied.current = true
     if (link.year && link.year !== profile.grade) setGrade(link.year)
     if (link.mode && link.mode !== profile.mode) update({ mode: link.mode })
-    if (link.year && !profile.onboarded) update({ onboarded: true, interests: profile.interests.length ? profile.interests : ['클라우드·인프라'], goal: profile.goal === '아직 없음' && link.year >= 3 ? '취업' : profile.goal })
+    if (link.screen && !profile.onboarded) update({ onboarded: true })
   }
   const [screen, setScreen] = useState(link.screen ?? (profile.onboarded ? 'home' : 'intro'))
   const [noticeDraft, setNoticeDraft] = useState('')
+  const [editCredits, setEditCredits] = useState(false)
   const mode = profile.mode
 
   return (
     <div className="stage">
       <div className="app">
         {screen === 'intro' && (
-          <Intro
-            onboarded={profile.onboarded}
-            onStart={() => setScreen('onboard')}
-            onContinue={() => setScreen('home')}
-          />
+          <Intro onboarded={profile.onboarded} onStart={() => setScreen('onboard')} onContinue={() => setScreen('home')} />
         )}
         {screen === 'onboard' && (
-          <Onboarding
-            profile={profile}
-            setGrade={setGrade}
-            update={update}
-            onDone={(withTimetable) => setScreen(withTimetable ? 'timetable' : 'home')}
-            onBack={() => setScreen('intro')}
-          />
+          <Onboarding profile={profile} setGrade={setGrade} update={update} onDone={(withTimetable) => setScreen(withTimetable ? 'timetable' : 'home')} onBack={() => setScreen('intro')} />
         )}
-        {screen === 'timetable' && (
-          <Timetable profile={profile} update={update} onDone={() => setScreen('home')} />
-        )}
+        {screen === 'timetable' && <Timetable profile={profile} update={update} onDone={() => setScreen('home')} />}
         {TABS.has(screen) && (
           <Session
             key={`${profile.grade}`}
@@ -76,6 +65,8 @@ export default function App() {
             setScreen={setScreen}
             noticeDraft={noticeDraft}
             setNoticeDraft={setNoticeDraft}
+            editCredits={editCredits}
+            setEditCredits={setEditCredits}
             initialAsk={link.ask}
           />
         )}
@@ -90,7 +81,7 @@ export default function App() {
 }
 
 /** 학년 하나의 세션. 학년이 바뀌면 key로 리마운트되어 대화가 새로 시작된다. */
-function Session({ profile, update, setGrade, learn, reset, mode, screen, setScreen, noticeDraft, setNoticeDraft, initialAsk }) {
+function Session({ profile, update, setGrade, learn, reset, mode, screen, setScreen, noticeDraft, setNoticeDraft, editCredits, setEditCredits, initialAsk }) {
   const chat = useChat(profile, mode, learn)
   const asked = useRef(false)
 
@@ -125,11 +116,13 @@ function Session({ profile, update, setGrade, learn, reset, mode, screen, setScr
             setScreen('notice')
           }}
           onEditTimetable={() => setScreen('timetable')}
+          onEditCredits={() => {
+            setEditCredits(true)
+            setScreen('me')
+          }}
         />
       )}
-      {screen === 'chat' && (
-        <Chat profile={profile} mode={mode} onChangeMode={changeMode} messages={chat.messages} loading={chat.loading} send={chat.send} />
-      )}
+      {screen === 'chat' && <Chat profile={profile} mode={mode} onChangeMode={changeMode} messages={chat.messages} loading={chat.loading} send={chat.send} />}
       {screen === 'notice' && (
         <Notice
           grade={profile.grade}
@@ -143,18 +136,26 @@ function Session({ profile, update, setGrade, learn, reset, mode, screen, setScr
       )}
       {screen === 'me' && (
         <Profile
+          key={editCredits ? 'edit' : 'view'}
           profile={profile}
           update={update}
           setGrade={setGrade}
           onChangeMode={changeMode}
           onEditTimetable={() => setScreen('timetable')}
+          startEditing={editCredits}
           onReset={() => {
             reset()
             setScreen('intro')
           }}
         />
       )}
-      <TabBar screen={screen} onGo={setScreen} />
+      <TabBar
+        screen={screen}
+        onGo={(s) => {
+          setEditCredits(false)
+          setScreen(s)
+        }}
+      />
     </>
   )
 }

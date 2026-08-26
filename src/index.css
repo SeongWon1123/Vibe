@@ -1677,3 +1677,29 @@ button {
   color: #fff;
   border-color: var(--ink);
 }
+
+.lines {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #4a433e;
+}
+
+.lines li {
+  padding-left: 12px;
+  position: relative;
+}
+
+.lines li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--dusk);
+}

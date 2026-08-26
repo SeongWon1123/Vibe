@@ -1,6 +1,7 @@
 import { useState } from 'react'
+import { CURRICULUM, plannedFor } from '../data/curriculum.js'
 import { DAYS, PERIODS, periodLabel } from '../data/standard.js'
-import { thisSemesterCredits } from '../lib/audit.js'
+import { curriculumCheck, thisSemesterCredits } from '../lib/audit.js'
 
 const COLORS = ['#F7E9E0', '#EAE6F5', '#E3EEE4', '#F6EFD9', '#E4EEF6', '#F1E4EC']
 
@@ -35,18 +36,45 @@ export function TimetableGrid({ timetable, compact = false }) {
   )
 }
 
+/** 교육과정 대조 결과 카드 (홈·시간표 공용) */
+export function CurriculumCard({ profile, onAsk }) {
+  const chk = curriculumCheck(profile)
+  return (
+    <div className="record">
+      <div className="cap">교육과정 대조 · {profile.semester} 기준</div>
+      {profile.timetable.length === 0 ? (
+        <p className="p-note" style={{ padding: '4px 0 0' }}>시간표를 넣으면 전공필수 누락·선수과목·학점 부담을 교육과정표와 대조해 줘요.</p>
+      ) : (
+        <ul className="lines">
+          {chk.lines.map((l) => (
+            <li key={l}>{l}</li>
+          ))}
+          <li>{chk.load}</li>
+        </ul>
+      )}
+      {onAsk && profile.timetable.length > 0 && (
+        <button type="button" className="more" style={{ marginTop: 8 }} onClick={() => onAsk('내 시간표 교육과정이랑 맞아?')}>
+          동학에게 자세히 묻기
+        </button>
+      )}
+    </div>
+  )
+}
+
 export default function Timetable({ profile, update, onDone }) {
   const [draft, setDraft] = useState({ name: '', credits: 3, day: '월', start: 1, end: 2 })
   const list = profile.timetable
   const planned = thisSemesterCredits(list)
+  const suggestions = plannedFor(profile.grade, 2).filter((c) => !list.some((r) => r.name === c.name))
 
   function add(e) {
-    e.preventDefault()
+    e?.preventDefault()
     const name = draft.name.trim()
     if (!name) return
     const start = Number(draft.start)
     const end = Math.max(start, Number(draft.end))
-    update({ timetable: [...list, { name, credits: Number(draft.credits) || 0, day: draft.day, start, end }] })
+    const known = CURRICULUM.find((c) => c.name === name)
+    update({ timetable: [...list, { name, credits: Number(draft.credits) || known?.credits || 0, day: draft.day, start, end }] })
     setDraft({ ...draft, name: '' })
   }
 
@@ -75,7 +103,12 @@ export default function Timetable({ profile, update, onDone }) {
       <form className="paste" onSubmit={add} style={{ paddingTop: 20 }}>
         <label htmlFor="course">과목 추가</label>
         <div className="tt-form">
-          <input id="course" className="in" placeholder="과목명" value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
+          <input id="course" className="in" list="curriculum" placeholder="과목명 (교육과정표에서 자동완성)" value={draft.name} onChange={(e) => { const known = CURRICULUM.find((c) => c.name === e.target.value); setDraft({ ...draft, name: e.target.value, credits: known ? known.credits : draft.credits }) }} />
+          <datalist id="curriculum">
+            {CURRICULUM.map((c) => (
+              <option key={c.name} value={c.name} />
+            ))}
+          </datalist>
           <input className="in sm" type="number" min="0" max="6" aria-label="학점" value={draft.credits} onChange={(e) => setDraft({ ...draft, credits: e.target.value })} />
           <span className="unit">학점</span>
         </div>
@@ -104,7 +137,21 @@ export default function Timetable({ profile, update, onDone }) {
             추가
           </button>
         </div>
+        {suggestions.length > 0 && (
+          <div className="chips" style={{ marginTop: 10 }}>
+            <span className="unit">이 학기 배치 과목:</span>
+            {suggestions.map((c) => (
+              <button key={c.name} type="button" className="fchip" onClick={() => setDraft({ ...draft, name: c.name, credits: c.credits })}>
+                {c.name} · {c.type}
+              </button>
+            ))}
+          </div>
+        )}
       </form>
+
+      <div className="sec">
+        <CurriculumCard profile={profile} />
+      </div>
 
       <div className="sec">
         <div className="sec-head">
@@ -122,11 +169,6 @@ export default function Timetable({ profile, update, onDone }) {
             </button>
           </div>
         ))}
-        {list.length > 0 && (
-          <button type="button" className="more" style={{ marginTop: 10 }} onClick={() => update({ timetable: [] })}>
-            전부 지우고 직접 입력
-          </button>
-        )}
       </div>
     </div>
   )

@@ -1,4 +1,3 @@
-// ※ 데모용 샘플. 학년별 "이 시점이면 보통 이 정도"라는 기본값이며, 사용자가 온보딩에서 직접 고친다.
 export const GRAD = { total: 130, major: 70, general: 30 }
 
 export const INTERESTS = ['웹 개발', '클라우드·인프라', 'AI·데이터', '게임', '보안', '임베디드', '아직 모르겠어']
@@ -9,48 +8,7 @@ export const DAYS = ['월', '화', '수', '목', '금']
 export const PERIODS = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 export const periodLabel = (p) => `${8 + p}:00`
 
-export const STANDARD = {
-  1: {
-    semester: '1학년 2학기',
-    credits: { total: 18, major: 6, general: 12 },
-    timetable: [
-      { name: '자료구조입문', credits: 3, day: '월', start: 2, end: 3 },
-      { name: '이산수학', credits: 3, day: '화', start: 1, end: 2 },
-      { name: '컴퓨터시스템입문', credits: 3, day: '수', start: 3, end: 4 },
-      { name: '정량적사고와컴퓨팅사고', credits: 2, day: '목', start: 5, end: 6 },
-      { name: '음악의이해', credits: 2, day: '금', start: 2, end: 3 },
-    ],
-  },
-  2: {
-    semester: '2학년 2학기',
-    credits: { total: 54, major: 27, general: 24 },
-    timetable: [
-      { name: '운영체제', credits: 3, day: '월', start: 1, end: 2 },
-      { name: '알고리즘', credits: 3, day: '화', start: 3, end: 4 },
-      { name: '데이터베이스', credits: 3, day: '수', start: 1, end: 2 },
-      { name: '확률및통계', credits: 3, day: '목', start: 2, end: 3 },
-      { name: '현대예술의이해', credits: 2, day: '금', start: 4, end: 5 },
-    ],
-  },
-  3: {
-    semester: '3학년 2학기',
-    credits: { total: 72, major: 42, general: 27 },
-    timetable: [
-      { name: '클라우드컴퓨팅', credits: 3, day: '월', start: 3, end: 4 },
-      { name: '웹서버프로그래밍', credits: 3, day: '화', start: 1, end: 2 },
-      { name: '데이터엔지니어링', credits: 3, day: '수', start: 5, end: 6 },
-      { name: '인공지능개론', credits: 3, day: '목', start: 3, end: 4 },
-    ],
-  },
-  4: {
-    semester: '4학년 2학기',
-    credits: { total: 108, major: 63, general: 30 },
-    timetable: [
-      { name: '캡스톤디자인2', credits: 3, day: '화', start: 5, end: 7 },
-      { name: '현장실습', credits: 3, day: '금', start: 1, end: 4 },
-    ],
-  },
-}
+export const semesterLabel = (grade) => `${grade}학년 2학기`
 
 /** 학년별 "다음 한 걸음" — 홈 카드. 성향·관심을 넓히는 1학년 → 포트폴리오를 닫는 4학년. */
 export function nextSteps(profile) {
@@ -83,9 +41,9 @@ export function nextSteps(profile) {
 }
 
 export function quickQuestions(grade) {
-  if (grade === 1) return ['이번 학기에 뭘 해야 할까?', '내 관심사에 맞는 활동 뭐가 있어?', '들을 만한 교양 추천해줘']
-  if (grade === 2) return ['이번 학기에 뭘 해야 할까?', '3학년에 뭘 들으면 좋을지 미리 알려줘', '들을 만한 교양 추천해줘']
-  if (grade === 3) return ['이번 학기에 뭘 해야 할까?', '내 진로에 맞는 자격증 뭐가 좋아?', '졸업까지 뭐가 남았어?']
+  if (grade === 1) return ['내 시간표 교육과정이랑 맞아?', '내 관심사에 맞는 활동 뭐가 있어?', '들을 만한 교양 추천해줘']
+  if (grade === 2) return ['내 시간표 교육과정이랑 맞아?', '3학년에 뭘 들으면 좋을지 미리 알려줘', '들을 만한 교양 추천해줘']
+  if (grade === 3) return ['내 시간표 교육과정이랑 맞아?', '내 진로에 맞는 자격증 뭐가 좋아?', '졸업까지 뭐가 남았어?']
   return ['포트폴리오 뭐부터 정리해?', '이력서에 뭘 써야 해?', '졸업까지 뭐가 남았어?']
 }
 

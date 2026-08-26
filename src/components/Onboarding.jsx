@@ -12,17 +12,27 @@ function Arrow() {
   )
 }
 
+function n(v) {
+  const x = Number(v)
+  return Number.isFinite(x) && x >= 0 ? Math.min(200, Math.round(x)) : 0
+}
+
 export default function Onboarding({ profile, setGrade, update, onDone, onBack }) {
   const [step, setStep] = useState(0)
-  // null이면 아직 손대지 않은 것 → 현재 학년 표준값을 보여 준다
-  const [edited, setEdited] = useState(null)
-  const credits = edited ?? profile.credits
-  const setCredits = setEdited
+  const [credits, setCredits] = useState({
+    total: profile.credits.total || '',
+    major: profile.credits.major || '',
+    general: profile.credits.general || '',
+  })
   const last = step === STEPS.length - 1
+
+  function commit() {
+    update({ credits: { total: n(credits.total), major: n(credits.major), general: n(credits.general) }, onboarded: true })
+  }
 
   function next() {
     if (last) {
-      update({ credits: { total: n(credits.total), major: n(credits.major), general: n(credits.general) }, onboarded: true })
+      commit()
       onDone(true)
       return
     }
@@ -59,13 +69,13 @@ export default function Onboarding({ profile, setGrade, update, onDone, onBack }
           <div className="wiz-q">지금 몇 학년이야?</div>
           <div className="wiz-opts" role="radiogroup">
             {[1, 2, 3, 4].map((g) => (
-              <button key={g} type="button" role="radio" aria-checked={profile.grade === g} className={profile.grade === g ? 'wopt on' : 'wopt'} style={{ minHeight: 0 }} onClick={() => { setGrade(g); setEdited(null) }}>
+              <button key={g} type="button" role="radio" aria-checked={profile.grade === g} className={profile.grade === g ? 'wopt on' : 'wopt'} style={{ minHeight: 0 }} onClick={() => setGrade(g)}>
                 <span className="grade">{g}학년</span>
                 <span className="cap">{g === 1 ? '관심 분야 찾는 해' : g === 2 ? '트랙 정하는 해' : g === 3 ? '자격증·인턴 준비' : '포트폴리오·취업'}</span>
               </button>
             ))}
           </div>
-          <div className="wiz-note">2학기 기준으로 학점·시간표 기본값을 깔아 둘게. 다음 단계에서 직접 고칠 수 있어.</div>
+          <div className="wiz-note">학년에 맞는 교육과정표로 시간표를 대조해 줘.</div>
         </>
       )}
 
@@ -108,7 +118,7 @@ export default function Onboarding({ profile, setGrade, update, onDone, onBack }
             <Field label={`전공 (졸업 ${GRAD.major})`} value={credits.major} onChange={(v) => setCredits({ ...credits, major: v })} />
             <Field label={`교양 (졸업 ${GRAD.general})`} value={credits.general} onChange={(v) => setCredits({ ...credits, general: v })} />
           </div>
-          <div className="wiz-note">향림통 성적 조회의 숫자를 그대로 적으면 돼. 지금 숫자는 {profile.grade}학년 2학기 표준 샘플이야.</div>
+          <div className="wiz-note">향림통 성적 조회의 숫자를 그대로 적으면 돼. 모르면 비워 두고 나중에 내 정보에서 넣어도 돼.</div>
         </>
       )}
 
@@ -123,7 +133,7 @@ export default function Onboarding({ profile, setGrade, update, onDone, onBack }
               </button>
             ))}
           </div>
-          <div className="wiz-note">다음 화면에서 이번 학기 시간표를 넣으면 과목·학점이 자동으로 반영돼.</div>
+          <div className="wiz-note">다음 화면에서 이번 학기 시간표를 넣으면 교육과정과 대조해 피드백해 줘.</div>
         </>
       )}
 
@@ -133,8 +143,8 @@ export default function Onboarding({ profile, setGrade, update, onDone, onBack }
           <Arrow />
         </button>
         {last && (
-          <button type="button" className="btn-outline" style={{ width: '100%', marginTop: 8 }} onClick={() => { update({ credits: { total: n(credits.total), major: n(credits.major), general: n(credits.general) }, onboarded: true }); onDone(false) }}>
-            샘플 시간표로 일단 시작
+          <button type="button" className="btn-outline" style={{ width: '100%', marginTop: 8 }} onClick={() => { commit(); onDone(false) }}>
+            시간표는 나중에
           </button>
         )}
       </div>
@@ -142,16 +152,11 @@ export default function Onboarding({ profile, setGrade, update, onDone, onBack }
   )
 }
 
-function n(v) {
-  const x = Number(v)
-  return Number.isFinite(x) && x >= 0 ? Math.min(200, Math.round(x)) : 0
-}
-
 function Field({ label, value, onChange }) {
   return (
     <label className="field">
       <span>{label}</span>
-      <input type="number" inputMode="numeric" min="0" max="200" value={value} onChange={(e) => onChange(e.target.value)} />
+      <input type="number" inputMode="numeric" min="0" max="200" placeholder="0" value={value} onChange={(e) => onChange(e.target.value)} />
     </label>
   )
 }
