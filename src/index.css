@@ -1595,19 +1595,22 @@ button {
 
 .tt-cell {
   min-height: 34px;
+  min-width: 0;
   border-top: 1px solid var(--surface);
   border-left: 1px solid var(--surface);
   padding: 4px 3px;
   font-weight: 600;
-  line-height: 1.25;
+  line-height: 1.2;
   letter-spacing: -0.03em;
-  word-break: keep-all;
+  word-break: break-all;
+  overflow: hidden;
   color: var(--ink);
 }
 
 .tt.compact .tt-cell {
   min-height: 28px;
-  font-size: 10px;
+  font-size: 9.5px;
+  padding: 3px 2px;
 }
 
 .tt-cell.on {

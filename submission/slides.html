@@ -7,204 +7,172 @@
 <style>
   @page { size: 1280px 720px; margin: 0; }
   *{margin:0;padding:0;box-sizing:border-box}
-  :root{--ink:#1C1519;--sub:#6E6660;--faint:#A9A29B;--line:#EFEAE4;--surface:#F8F5F1;--dusk:#C25E3A;--dusk-deep:#A5482C;--dusk-soft:#F7E9E0;--star:#E1972F}
+  :root{--ink:#1C1519;--sub:#6E6660;--faint:#A9A29B;--line:#EFEAE4;--surface:#F8F5F1;--dusk:#C25E3A;--dusk-deep:#A5482C;--dusk-soft:#F7E9E0;--star:#E1972F;--paper:#FBF9F6}
   html,body{background:#fff}
   body{font-family:"Pretendard Variable",Pretendard,-apple-system,sans-serif;letter-spacing:-.02em;color:var(--ink)}
-  .slide{width:1280px;height:720px;position:relative;overflow:hidden;page-break-after:always;break-after:page;padding:72px 88px;background:#fff}
+  .slide{width:1280px;height:720px;position:relative;overflow:hidden;page-break-after:always;break-after:page;padding:76px 96px;background:var(--paper)}
   .slide:last-child{page-break-after:auto}
-  .num{position:absolute;right:88px;bottom:40px;font-size:13px;color:var(--faint);font-weight:600}
-  .brand{position:absolute;left:88px;bottom:40px;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--faint);font-weight:600}
-  .mark{width:22px;height:22px;border-radius:7px;background:var(--dusk);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}
-  .eyebrow{font-size:14px;font-weight:700;color:var(--dusk);letter-spacing:.02em;margin-bottom:16px}
-  h1{font-size:46px;font-weight:700;letter-spacing:-.045em;line-height:1.22}
-  h2{font-size:38px;font-weight:700;letter-spacing:-.04em;line-height:1.25;margin-bottom:34px}
-  p.lead{font-size:20px;color:var(--sub);line-height:1.65;margin-top:22px;max-width:760px}
-  .cols{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
-  .cols3{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
-  .card{border:1px solid var(--line);border-radius:18px;padding:26px 28px;background:#fff}
-  .card .cap{font-size:12.5px;font-weight:700;color:var(--dusk);margin-bottom:10px}
-  .card b{display:block;font-size:20px;font-weight:700;letter-spacing:-.03em;margin-bottom:8px}
-  .card p{font-size:15px;color:var(--sub);line-height:1.6}
-  .soft{background:var(--surface);border-color:transparent}
-  ul.list{list-style:none;display:flex;flex-direction:column;gap:14px}
-  ul.list li{font-size:19px;line-height:1.55;padding-left:22px;position:relative}
-  ul.list li::before{content:"";position:absolute;left:0;top:13px;width:7px;height:7px;border-radius:50%;background:var(--dusk)}
-  ul.list li small{display:block;font-size:15px;color:var(--sub)}
-  .phone{border-radius:28px;overflow:hidden;box-shadow:0 24px 50px rgba(30,20,15,.18);background:#fff;border:1px solid var(--line);height:540px}
+  .pg{position:absolute;right:96px;bottom:44px;font-size:12px;color:var(--faint)}
+  .foot{position:absolute;left:96px;bottom:44px;font-size:12px;color:var(--faint)}
+  .foot b{color:var(--dusk);font-weight:700}
+  h1{font-size:56px;font-weight:800;letter-spacing:-.05em;line-height:1.15}
+  h2{font-size:40px;font-weight:800;letter-spacing:-.045em;line-height:1.2}
+  p{font-size:20px;line-height:1.7;color:#3b3430}
+  .muted{color:var(--sub)}
+  .two{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center;height:100%}
+  .three{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;align-items:start;margin-top:20px}
+  .phone{border-radius:26px;overflow:hidden;box-shadow:0 22px 44px rgba(30,20,15,.16);background:#fff;border:1px solid var(--line)}
   .phone img{display:block;width:100%;height:100%;object-fit:cover;object-position:top}
-  .shots .phone{height:470px}
-  .shots{display:flex;gap:22px;justify-content:center;align-items:flex-start}
-  .shots figure{width:290px;text-align:center}
-  .shots figcaption{font-size:14px;color:var(--sub);margin-top:12px;line-height:1.5}
-  .shots figcaption b{display:block;color:var(--ink);font-size:15px}
+  .cap{font-size:14px;color:var(--sub);margin-top:10px;line-height:1.5}
+  .note{display:inline-block;background:#FFF4C2;color:#5a4a1e;padding:6px 12px;border-radius:4px;font-size:15px;font-weight:600;transform:rotate(-1.5deg);box-shadow:0 2px 6px rgba(0,0,0,.08)}
+  .quote{font-size:34px;font-weight:700;line-height:1.45;letter-spacing:-.04em;border-left:6px solid var(--dusk);padding-left:26px;max-width:900px}
+  .quote small{display:block;font-size:16px;color:var(--faint);font-weight:500;margin-top:14px;letter-spacing:0}
   .dark{background:#2A1E2C;color:#fff}
-  .dark .eyebrow{color:#F0B279}
-  .dark p.lead{color:rgba(255,255,255,.8)}
-  .dark .num,.dark .brand{color:rgba(255,255,255,.55)}
-  .quote{font-size:30px;font-weight:600;line-height:1.5;letter-spacing:-.035em;max-width:900px}
-  .quote em{font-style:normal;color:var(--dusk)}
-  .flow{display:flex;align-items:center;gap:14px;margin-top:12px}
-  .flow .box{border:1px solid var(--line);border-radius:14px;padding:18px 20px;font-size:16px;font-weight:600;background:#fff;min-width:150px;text-align:center}
-  .flow .box small{display:block;font-weight:500;color:var(--sub);font-size:13px;margin-top:4px}
-  .flow .arrow{font-size:22px;color:var(--faint)}
-  table{border-collapse:collapse;width:100%;font-size:16px}
-  th,td{text-align:left;padding:13px 14px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.5}
-  th{font-size:13px;color:var(--faint);font-weight:700}
-  td b{font-weight:700}
-  .url{font-size:22px;font-weight:700;color:var(--dusk);word-break:break-all}
+  .dark p,.dark .muted{color:rgba(255,255,255,.78)}
+  .dark .pg,.dark .foot{color:rgba(255,255,255,.5)}
+  ul.plain{list-style:none;margin-top:26px}
+  ul.plain li{font-size:21px;line-height:1.6;padding:10px 0;border-top:1px solid var(--line)}
+  ul.plain li:last-child{border-bottom:1px solid var(--line)}
+  ul.plain b{font-weight:700}
+  .table{margin-top:24px;border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:15px;background:#fff}
+  .table div{display:grid;grid-template-columns:1fr 1.2fr 1fr 1fr 1fr;padding:9px 16px;border-top:1px solid var(--line)}
+  .table div:first-child{border-top:0;background:var(--surface);font-weight:700;color:var(--sub)}
+  .code{background:#fff;border:1px solid var(--line);border-radius:10px;padding:18px 22px;font-size:15px;line-height:1.65;color:#3b3430;white-space:pre-wrap}
+  .code b{color:var(--dusk)}
 </style>
 </head>
 <body>
 
-<!-- 1 표지 -->
+<!-- 1 -->
 <section class="slide dark">
-  <div class="eyebrow">바이브코딩 경진대회 · 우리가 만드는 더 나은 대학생활</div>
-  <h1 style="font-size:58px;margin-top:80px">1학년의 관심사부터<br>4학년의 포트폴리오까지</h1>
-  <p class="lead" style="margin-top:34px">동학(同學) — 학생의 성향과 관심을 학기마다 알아가며<br>지금 해야 할 한 걸음을 알려주는 AI 학사 메이트</p>
-  <div class="brand"><span class="mark">同</span>동학 · 국립순천대학교 인공지능공학부 · 최성원</div>
-  <div class="num">1 / 10</div>
+  <div style="font-size:15px;color:#F0B279;font-weight:700;margin-bottom:120px">바이브코딩 경진대회 · 우리가 만드는 더 나은 대학생활</div>
+  <h1 style="font-size:64px">1학년의 관심사부터<br>4학년의 포트폴리오까지</h1>
+  <p style="margin-top:28px;font-size:22px">동학(同學) — 내 학점·시간표·관심을 넣으면, 내 학번 교육과정 기준으로<br>지금 해야 할 한 걸음을 같이 봐 주는 AI 학사 메이트</p>
+  <div class="foot">인공지능공학부 최성원 · <b>donghak.vercel.app</b></div>
+  <div class="pg">1 / 8</div>
 </section>
 
-<!-- 2 문제 -->
+<!-- 2 왜 만들었나 -->
 <section class="slide">
-  <div class="eyebrow">문제</div>
-  <h2>1학년의 나는 뭘 물어야 하는지도 몰랐다</h2>
-  <div class="cols">
+  <div class="quote">"4학년 되고 나서야 알았어요.<br>졸업인증 서류가 있다는 것도, 캡스톤이 전공필수라는 것도."
+    <small>제가 그랬습니다. 교육과정표는 300쪽짜리 PDF 안에 있고, 학점은 향림통에, 공지는 학과 게시판에 따로 있었으니까요.</small>
+  </div>
+  <p style="margin-top:44px;max-width:980px">1학년 때 누가 "너 이쪽 관심 있지? 그럼 이번 학기는 이것부터"라고 말해 줬다면 달랐을 겁니다.
+  선배한테 물어보면 되는데, 물어볼 게 뭔지도 몰랐습니다. <b>동학은 그때의 저한테 필요했던 선배</b>를 앱으로 만든 겁니다.</p>
+  <div class="foot">동학 · 왜 만들었나</div><div class="pg">2 / 8</div>
+</section>
+
+<!-- 3 어떻게 쓰나 -->
+<section class="slide">
+  <h2>쓰는 법은 세 단계</h2>
+  <div class="three">
     <div>
-      <p class="quote">"졸업사정 받고 나서야<br><em>졸업인증 서류</em>가 빠진 걸 알았다."</p>
-      <p class="lead">1~2학년은 관심 분야도, 뭘 준비해야 하는지도 흐릿하다. 학점·시간표·공지는 따로 놀고, 4학년이 되어서야 포트폴리오와 졸업요건의 구멍을 발견한다.</p>
+      <div class="phone" style="height:430px"><img src="shots/onboard.png" alt=""></div>
+      <div class="cap"><b>① 학년·학번·관심·목표·학점</b><br>표준값 같은 건 없습니다. 향림통 숫자를 그대로 넣습니다.</div>
     </div>
-    <ul class="list" style="margin-top:8px">
-      <li>성향을 아는 사람이 없다<small>관심이 어디로 가는지 스스로도 모른다</small></li>
-      <li>분산된 학사 정보<small>교육과정표·졸업요건·공지가 따로 논다</small></li>
-      <li>조교의 반복 상담<small>학기 초마다 같은 질문에 같은 답</small></li>
-      <li>놓치는 마감<small>공지는 읽었는데 캘린더에는 없다</small></li>
-    </ul>
-  </div>
-  <div class="brand"><span class="mark">同</span>동학</div><div class="num">2 / 10</div>
-</section>
-
-<!-- 3 해결 -->
-<section class="slide">
-  <div class="eyebrow">해결</div>
-  <h2>학기마다 나를 더 알아가는 AI 학사 메이트</h2>
-  <div class="cols3">
-    <div class="card soft"><div class="cap">01</div><b>성향·관심 파악</b><p>학년·관심·목표를 넣고 상담할수록 관심 키워드가 쌓인다. 1~2학년은 탐색, 3~4학년은 자격증·인턴·포트폴리오로 방향을 잡아 준다.</p></div>
-    <div class="card soft"><div class="cap">02</div><b>학점 관리 + 시간표 → 교육과정 대조</b><p>이수 학점과 시간표를 직접 넣으면 내 학번의 교육과정표(2021~2026)와 대조해 전공필수 누락·권장 학년·학점 부담을 짚고, 학번별 졸업기준(130/140학점)까지 남은 학점을 계산.</p></div>
-    <div class="card soft"><div class="cap">03</div><b>공지 → 캘린더</b><p>학과 공지를 붙여 넣으면 접수 마감만 뽑아 .ics로 저장. 하루 전 알림 포함.</p></div>
-  </div>
-  <p class="lead" style="margin-top:40px">챗봇 FAQ가 아니라, <b>내가 넣은 학점·시간표·관심</b>을 근거로 물어본 것에만 답하는 메이트. 선배 톤과 친구 톤 중 고를 수 있다.</p>
-  <div class="brand"><span class="mark">同</span>동학</div><div class="num">3 / 10</div>
-</section>
-
-<!-- 4 같은 질문, 다른 답 -->
-<section class="slide">
-  <div class="eyebrow">데모 · 내가 넣은 시간표·학점·관심을 근거로, 물어본 것에만</div>
-  <div class="shots">
-    <figure><div class="phone"><img src="shots/chat1.png" alt=""></div><figcaption><b>2학년 · 시간표 대조</b>25학번 교육과정표 기준으로 전선·전필을 구분하고, 표에 없는 과목은 교양·타과 여부 확인을 권한다.</figcaption></figure>
-    <figure><div class="phone"><img src="shots/chat3.png" alt=""></div><figcaption><b>3학년 · 자격증</b>클라우드 관심 → NCA·AWS. 졸업인증과 이력서를 동시에.</figcaption></figure>
-    <figure><div class="phone"><img src="shots/chat4.png" alt=""></div><figcaption><b>4학년 · 포트폴리오</b>시간표의 캡스톤·현장실습을 포트폴리오 항목으로.</figcaption></figure>
-  </div>
-  <div class="brand"><span class="mark">同</span>동학</div><div class="num">4 / 10</div>
-</section>
-
-<!-- 5 홈 -->
-<section class="slide">
-  <div class="eyebrow">데모 · 홈</div>
-  <div class="cols" style="grid-template-columns:1fr 340px;align-items:center">
     <div>
-      <h2>학점·시간표를 넣으면 홈이 내 것이 된다</h2>
-      <ul class="list">
-        <li>학점 관리 · 교육과정 대조<small>직접 넣은 학점·시간표를 교육과정표와 대조 — 전필 누락, 선수과목, 학점 부담</small></li>
-        <li>다가오는 일정<small>학사일정 D-day — 개강, 정정, 장학금, 졸업작품 발표</small></li>
-        <li>동학이 파악한 나 · 다음 한 걸음<small>관심 키워드와 학년에 맞는 카드 — 누르면 바로 질문</small></li>
-        <li>학과 공지<small>누르면 마감일이 캘린더 카드로</small></li>
+      <div class="phone" style="height:430px"><img src="shots/timetable.png" alt=""></div>
+      <div class="cap"><b>② 시간표 입력</b><br>과목명은 내 학번 전공표에서 자동완성. 넣는 즉시 교육과정과 대조합니다.</div>
+    </div>
+    <div>
+      <div class="phone" style="height:430px"><img src="shots/home4.png" alt=""></div>
+      <div class="cap"><b>③ 홈이 내 것이 됩니다</b><br>남은 학점, 대조 결과, 이번 주 일정, 학과 공지, 다음 한 걸음.</div>
+    </div>
+  </div>
+  <div class="foot">동학 · 사용 흐름</div><div class="pg">3 / 8</div>
+</section>
+
+<!-- 4 교육과정 대조 -->
+<section class="slide">
+  <div class="two">
+    <div>
+      <h2>교육과정표는 진짜 학교 것</h2>
+      <p style="margin-top:18px">2021~2026학년도 교육과정 PDF 8권에서 인공지능공학부(구 ICT융합공학부) 전공표와 졸업기준을 뽑아 넣었습니다. <b>학번마다 다릅니다.</b></p>
+      <div class="table">
+        <div><span>학번</span><span>학과명(원문)</span><span>졸업</span><span>전공</span><span>교양</span></div>
+        <div><span>2021</span><span>ICT융합공학부</span><span>130</span><span>72</span><span>30~46</span></div>
+        <div><span>2022·2023</span><span>인공지능공학부</span><span>130</span><span>72</span><span>30~46</span></div>
+        <div><span>2024</span><span>인공지능공학부</span><span><b>140</b></span><span>72</span><span>30~46</span></div>
+        <div><span>2025·2026</span><span>인공지능공학전공</span><span>140</span><span>72 (필 12)</span><span>30</span></div>
+      </div>
+      <p class="muted" style="font-size:15px;margin-top:14px">전공필수는 어드벤쳐디자인·이매지니어프로젝트Ⅰ·Ⅱ(+25학번부터 산학협력프로젝트)뿐입니다. 이것도 표에서 나온 사실입니다.</p>
+    </div>
+    <div>
+      <div class="code">시간표를 넣으면 이렇게 돌려줍니다 (25학번 2학년, 실제 화면)
+
+<b>·</b> 이번 학기 전공필수인데 시간표에 없음: 어드벤쳐디자인
+<b>·</b> 25학번 전공 교육과정표에 없는 과목: 블록체인개론
+  (교양·타과 과목이면 정상, 아니면 과목명 확인)
+<b>·</b> 이 학기 배치 전공 중 안 넣은 것: 객체지향프로그래밍,
+  데이터베이스, C프로그래밍2, 선형대수 …
+<b>·</b> 9학점이면 가벼운 편. 정규 학기는 보통 15~18학점이야.</div>
+      <div style="margin-top:18px"><span class="note">LLM이 아니라 표 대조 코드가 먼저 계산 → 그 결과를 LLM에게 근거로 넘김</span></div>
+    </div>
+  </div>
+  <div class="foot">동학 · 교육과정 대조</div><div class="pg">4 / 8</div>
+</section>
+
+<!-- 5 상담 -->
+<section class="slide">
+  <div style="display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:center;height:100%">
+    <div>
+      <h2>물어본 것만 답합니다</h2>
+      <p style="margin-top:18px">챗봇처럼 "추가로 궁금한 점이 있으면…" 하고 늘어놓지 않습니다. 내가 넣은 시간표·학점·관심을 근거로, 질문한 범위 안에서만.</p>
+      <ul class="plain">
+        <li><b>선배 모드</b> — 먼저 겪어 본 사람의 반말 피드백</li>
+        <li><b>메이트 모드</b> — 같이 학기 굴리는 친구 말투</li>
+        <li>상담에서 나온 키워드(자격증, 클라우드…)가 "동학이 파악한 나"에 쌓입니다</li>
       </ul>
     </div>
-    <div class="phone"><img src="shots/home4.png" alt=""></div>
-  </div>
-  <div class="brand"><span class="mark">同</span>동학</div><div class="num">5 / 10</div>
-</section>
-
-<!-- 6 공지→캘린더 -->
-<section class="slide">
-  <div class="eyebrow">데모 · 공지 → 캘린더</div>
-  <div class="cols" style="grid-template-columns:1fr 340px;align-items:center">
-    <div>
-      <h2>공지를 붙여 넣으면 마감일만 .ics로</h2>
-      <div class="flow">
-        <div class="box">공지 붙여 넣기<small>학과 졸업작품 발표 안내</small></div><div class="arrow">→</div>
-        <div class="box">접수 마감 추출<small>발표일 아님 · 10/30(금)</small></div><div class="arrow">→</div>
-        <div class="box">.ics 다운로드<small>하루 전 알림 포함</small></div>
-      </div>
-      <p class="lead">LLM이 날짜를 잘못 집어도 로컬 규칙이 접수 마감으로 교정한다. 폰에서 열면 캘린더에 바로 등록.</p>
+    <div style="display:flex;gap:22px;justify-content:center">
+      <div style="width:300px"><div class="phone" style="height:520px"><img src="shots/chat1.png" alt=""></div><div class="cap">2학년 · "내 시간표 교육과정이랑 맞아?" — 표에 없는 과목은 교양·타과 여부 확인을 권함</div></div>
+      <div style="width:300px"><div class="phone" style="height:520px"><img src="shots/chat4.png" alt=""></div><div class="cap">4학년 · "포트폴리오 뭐부터 정리해?" — 시간표의 이매지니어프로젝트Ⅱ를 항목으로</div></div>
     </div>
-    <div class="phone"><img src="shots/notice.png" alt=""></div>
   </div>
-  <div class="brand"><span class="mark">同</span>동학</div><div class="num">6 / 10</div>
+  <div class="foot">동학 · 상담</div><div class="pg">5 / 8</div>
 </section>
 
-<!-- 7 아키텍처 -->
+<!-- 6 공지 -->
 <section class="slide">
-  <div class="eyebrow">기술</div>
-  <h2>작게, 그러나 진짜로 동작하게</h2>
-  <div class="flow" style="margin-bottom:34px">
-    <div class="box">Vite + React 19<small>모바일 앱형 UI · 폰 프레임 데스크톱 뷰</small></div><div class="arrow">→</div>
-    <div class="box">Vercel Function<small>/api/chat · 키는 서버에만</small></div><div class="arrow">→</div>
-    <div class="box">OpenAI 호환 LLM<small>OpenRouter · gpt-4o-mini</small></div>
+  <div class="two">
+    <div>
+      <h2>공지는 읽는 것과<br>일정에 넣는 것 사이가 문제였습니다</h2>
+      <p style="margin-top:18px">학과 공지를 그대로 붙여 넣으면 접수·신청 마감일만 뽑아 <b>.ics</b>로 줍니다. 폰에서 열면 캘린더에 들어가고 하루 전 알림이 붙습니다.</p>
+      <p class="muted" style="font-size:16px;margin-top:14px">발표회 날짜(11/20)와 신청 마감(10/30)이 한 공지에 같이 있어도 마감 쪽을 고릅니다. LLM이 헷갈려도 규칙 코드가 마감일로 교정합니다.</p>
+    </div>
+    <div style="display:flex;justify-content:center"><div style="width:340px"><div class="phone" style="height:560px"><img src="shots/notice.png" alt=""></div></div></div>
   </div>
-  <table>
-    <tr><th>구성</th><th>방식</th></tr>
-    <tr><td><b>학생 프로필</b></td><td>학년·관심·목표·학점·시간표·관심 키워드. 브라우저 localStorage에만 저장</td></tr>
-    <tr><td><b>교육과정표</b></td><td>국립순천대 2021~2026학년도 교육과정 PDF에서 인공지능공학(부/전공) 전공표·졸업기준을 추출(pdfplumber). 입학년도별로 시스템 프롬프트에 주입, 시간표 대조 결과도 함께 전달</td></tr>
-    <tr><td><b>캘린더</b></td><td>.ics 표준 직접 생성 — TZID Asia/Seoul, 1시간 이벤트, 하루 전 VALARM</td></tr>
-    <tr><td><b>안전장치</b></td><td>IP당 분당 10회, 20초 타임아웃 + 재시도, 키 없으면 로컬 규칙 답변으로 대체</td></tr>
-  </table>
-  <div class="brand"><span class="mark">同</span>동학</div><div class="num">7 / 10</div>
+  <div class="foot">동학 · 공지 → 캘린더</div><div class="pg">6 / 8</div>
 </section>
 
-<!-- 8 정직한 경계 -->
+<!-- 7 솔직하게 -->
 <section class="slide">
-  <div class="eyebrow">데모의 경계</div>
-  <h2>진짜로 구현한 것과 연출한 것</h2>
-  <div class="cols">
-    <div class="card"><div class="cap">진짜</div><ul class="list"><li>LLM 상담 — 실제 API 호출, 학년별로 다른 답</li><li>.ics 생성 — 폰·PC 캘린더에 실제 등록</li><li>학점·시간표 입력 → 2021~2026 학교 교육과정표(입학년도별)와 대조 피드백</li><li>공지 마감일 추출 — 규칙 + LLM 이중 확인</li><li>선배 / 메이트 두 가지 말투</li></ul></div>
-    <div class="card soft"><div class="cap">연출</div><ul class="list"><li>학사일정·공지 — 샘플</li><li>교육과정 — 학과 공개 정보를 참고한 샘플</li><li>로그인·학사시스템 연동 — 없음</li></ul></div>
-  </div>
-  <p class="lead" style="margin-top:30px">실서비스에는 본인 인증과 학사시스템(향림통) 연동이 필요하다. 답변은 참고용이며 최종 확인은 학과 사무실.</p>
-  <div class="brand"><span class="mark">同</span>동학</div><div class="num">8 / 10</div>
-</section>
-
-<!-- 9 효과와 확장 -->
-<section class="slide">
-  <div class="eyebrow">효과 · 확장</div>
-  <h2>학생에겐 4년을 같이 크는 선배, 조교에겐 반복 상담을 덜어주는 조수</h2>
-  <div class="cols">
-    <ul class="list">
-      <li>저학년은 관심 분야를, 고학년은 포트폴리오를 학기 단위로 챙긴다</li>
-      <li>졸업 직전 발견하던 공백을 학기 단위로 앞당긴다</li>
-      <li>공지를 읽는 것과 일정에 넣는 것 사이의 틈을 없앤다</li>
+  <h2>솔직하게: 되는 것과 안 되는 것</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:8px">
+    <ul class="plain">
+      <li><b>됩니다</b> — 교육과정표 대조, 학번별 졸업기준 계산, LLM 상담(OpenRouter gpt-4o-mini), .ics 생성</li>
+      <li><b>됩니다</b> — 학점·시간표·관심은 내 폰 브라우저에만 저장. 서버에 개인정보 없음</li>
+      <li><b>됩니다</b> — API 키는 서버에만, IP당 분당 10회 제한</li>
     </ul>
-    <ul class="list">
-      <li>학사시스템 연동<small>실제 이수 내역으로 프로필 자동 생성</small></li>
-      <li>성향 모델 고도화<small>키워드 매칭 → 대화 기반 관심·성향 추정</small></li>
-      <li>전 학과 확대<small>학과별 교육과정표만 바꿔 끼우면 된다</small></li>
+    <ul class="plain">
+      <li><b>샘플입니다</b> — 학사일정 D-day, 학과 공지 목록</li>
+      <li><b>없습니다</b> — 로그인, 향림통 연동. 학점은 직접 입력해야 합니다</li>
+      <li><b>못 합니다</b> — 교양 과목명 검증(전공표에만 있음), 2025-1학기 교육과정(PDF 폰트 깨짐 → 2025-2학기 판 사용)</li>
     </ul>
   </div>
-  <div class="brand"><span class="mark">同</span>동학</div><div class="num">9 / 10</div>
+  <p class="muted" style="margin-top:34px;font-size:17px">Vite + React 19 · Vercel Function이 LLM 프록시 · 교육과정 PDF는 pdfplumber로 파싱해 코드로 변환(스크립트 공개). 새 교육과정이 나오면 PDF 넣고 스크립트 두 개 돌리면 끝.</p>
+  <div class="foot">동학 · 경계</div><div class="pg">7 / 8</div>
 </section>
 
-<!-- 10 링크 -->
+<!-- 8 -->
 <section class="slide dark">
-  <div class="eyebrow">지금 써보기</div>
-  <h1 style="margin-top:60px">동학 同學</h1>
-  <p class="lead" style="margin-top:20px">폰으로 열면 앱처럼, PC로 열면 폰 프레임으로.<br>학년·관심·학점·시간표를 넣고 "이번 학기에 뭘 해야 할까?"를 물어보세요.</p>
-  <div class="url" style="margin-top:44px;color:#F0B279">https://donghak.vercel.app</div>
-  <p class="lead" style="margin-top:34px;font-size:16px">소스: github.com/SeongWon1123/Vibe · 교육과정표는 학교 2021~2026 교육과정 기준, 일정·공지는 샘플</p>
-  <div class="brand"><span class="mark">同</span>동학 · 국립순천대학교 인공지능공학부 · 최성원</div>
-  <div class="num">10 / 10</div>
+  <div style="font-size:15px;color:#F0B279;font-weight:700;margin-bottom:90px">직접 써 보기</div>
+  <h1>donghak.vercel.app</h1>
+  <p style="margin-top:26px;font-size:22px">폰으로 열면 앱처럼 보입니다. 학년·학번·학점·시간표를 넣고<br>"내 시간표 교육과정이랑 맞아?"부터 물어보세요.</p>
+  <p style="margin-top:40px;font-size:17px">다음에 하고 싶은 것 — 향림통 연동으로 학점 자동 입력, 교양 영역까지 대조, 다른 학과 교육과정 추가</p>
+  <div class="foot">인공지능공학부 최성원 · github.com/SeongWon1123/Vibe</div>
+  <div class="pg">8 / 8</div>
 </section>
 
-<script>const n=Number(location.hash.slice(1));if(n)window.scrollTo(0,(n-1)*720)</script>
 </body>
 </html>
