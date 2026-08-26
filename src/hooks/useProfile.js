@@ -41,7 +41,9 @@ function fromLink() {
   try {
     const raw = new URLSearchParams(window.location.search).get('p')
     if (!raw) return null
-    const p = JSON.parse(decodeURIComponent(escape(atob(raw))))
+    // URL에서 '+'가 공백으로 바뀌고, URL-safe base64('-','_')도 올 수 있다
+    const b64 = raw.replace(/ /g, '+').replace(/-/g, '+').replace(/_/g, '/')
+    const p = JSON.parse(decodeURIComponent(escape(atob(b64))))
     return { ...emptyProfile(p.grade || 1, p.entryYear), ...p, entryYear: validYear(p.entryYear, p.grade || 1), onboarded: true }
   } catch {
     return null
