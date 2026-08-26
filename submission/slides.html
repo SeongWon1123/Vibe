@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>동학 — 발표자료</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  @page { size: 1280px 720px; margin: 0; }
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{--ink:#1C1519;--sub:#6E6660;--faint:#A9A29B;--line:#EFEAE4;--surface:#F8F5F1;--dusk:#C25E3A;--dusk-deep:#A5482C;--dusk-soft:#F7E9E0;--star:#E1972F}
+  html,body{background:#fff}
+  body{font-family:"Pretendard Variable",Pretendard,-apple-system,sans-serif;letter-spacing:-.02em;color:var(--ink)}
+  .slide{width:1280px;height:720px;position:relative;overflow:hidden;page-break-after:always;break-after:page;padding:72px 88px;background:#fff}
+  .slide:last-child{page-break-after:auto}
+  .num{position:absolute;right:88px;bottom:40px;font-size:13px;color:var(--faint);font-weight:600}
+  .brand{position:absolute;left:88px;bottom:40px;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--faint);font-weight:600}
+  .mark{width:22px;height:22px;border-radius:7px;background:var(--dusk);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}
+  .eyebrow{font-size:14px;font-weight:700;color:var(--dusk);letter-spacing:.02em;margin-bottom:16px}
+  h1{font-size:46px;font-weight:700;letter-spacing:-.045em;line-height:1.22}
+  h2{font-size:38px;font-weight:700;letter-spacing:-.04em;line-height:1.25;margin-bottom:34px}
+  p.lead{font-size:20px;color:var(--sub);line-height:1.65;margin-top:22px;max-width:760px}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+  .cols3{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+  .card{border:1px solid var(--line);border-radius:18px;padding:26px 28px;background:#fff}
+  .card .cap{font-size:12.5px;font-weight:700;color:var(--dusk);margin-bottom:10px}
+  .card b{display:block;font-size:20px;font-weight:700;letter-spacing:-.03em;margin-bottom:8px}
+  .card p{font-size:15px;color:var(--sub);line-height:1.6}
+  .soft{background:var(--surface);border-color:transparent}
+  ul.list{list-style:none;display:flex;flex-direction:column;gap:14px}
+  ul.list li{font-size:19px;line-height:1.55;padding-left:22px;position:relative}
+  ul.list li::before{content:"";position:absolute;left:0;top:13px;width:7px;height:7px;border-radius:50%;background:var(--dusk)}
+  ul.list li small{display:block;font-size:15px;color:var(--sub)}
+  .phone{border-radius:28px;overflow:hidden;box-shadow:0 24px 50px rgba(30,20,15,.18);background:#fff;border:1px solid var(--line);height:540px}
+  .phone img{display:block;width:100%;height:100%;object-fit:cover;object-position:top}
+  .shots .phone{height:470px}
+  .shots{display:flex;gap:22px;justify-content:center;align-items:flex-start}
+  .shots figure{width:290px;text-align:center}
+  .shots figcaption{font-size:14px;color:var(--sub);margin-top:12px;line-height:1.5}
+  .shots figcaption b{display:block;color:var(--ink);font-size:15px}
+  .dark{background:#2A1E2C;color:#fff}
+  .dark .eyebrow{color:#F0B279}
+  .dark p.lead{color:rgba(255,255,255,.8)}
+  .dark .num,.dark .brand{color:rgba(255,255,255,.55)}
+  .quote{font-size:30px;font-weight:600;line-height:1.5;letter-spacing:-.035em;max-width:900px}
+  .quote em{font-style:normal;color:var(--dusk)}
+  .flow{display:flex;align-items:center;gap:14px;margin-top:12px}
+  .flow .box{border:1px solid var(--line);border-radius:14px;padding:18px 20px;font-size:16px;font-weight:600;background:#fff;min-width:150px;text-align:center}
+  .flow .box small{display:block;font-weight:500;color:var(--sub);font-size:13px;margin-top:4px}
+  .flow .arrow{font-size:22px;color:var(--faint)}
+  table{border-collapse:collapse;width:100%;font-size:16px}
+  th,td{text-align:left;padding:13px 14px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.5}
+  th{font-size:13px;color:var(--faint);font-weight:700}
+  td b{font-weight:700}
+  .url{font-size:22px;font-weight:700;color:var(--dusk);word-break:break-all}
+</style>
+</head>
+<body>
+
+<!-- 1 표지 -->
+<section class="slide dark">
+  <div class="eyebrow">바이브코딩 경진대회 · 우리가 만드는 더 나은 대학생활</div>
+  <h1 style="font-size:58px;margin-top:80px">4학년이 되어서야<br>알게 되는 것들,<br>1학년부터 같이 봐요</h1>
+  <p class="lead" style="margin-top:34px">동학(同學) — 같은 질문에도 학년·이수과목·목표에 따라<br>다른 답을 주는 국립순천대 AI 학사 선배</p>
+  <div class="brand"><span class="mark">同</span>동학 · 국립순천대학교 인공지능공학부 · 최성원</div>
+  <div class="num">1 / 10</div>
+</section>
+
+<!-- 2 문제 -->
+<section class="slide">
+  <div class="eyebrow">문제</div>
+  <h2>같은 질문인데, 학년마다 답이 달라야 한다</h2>
+  <div class="cols">
+    <div>
+      <p class="quote">"졸업사정 받고 나서야<br><em>공인영어성적</em>이 빠진 걸 알았다."</p>
+      <p class="lead">학사 정보는 학년·이수 이력에 따라 달라지는데, 공지·학사요람·조교 상담에 흩어져 있다. 저학년은 자기 상황에 맞는 답을 받기 어렵고, 고학년이 되어서야 구멍을 발견한다.</p>
+    </div>
+    <ul class="list" style="margin-top:8px">
+      <li>정보 격차<small>1학년은 뭘 물어야 하는지도 모른다</small></li>
+      <li>분산된 학사 정보<small>교육과정표·졸업요건·공지가 따로 논다</small></li>
+      <li>조교의 반복 상담<small>학기 초마다 같은 질문에 같은 답</small></li>
+      <li>놓치는 마감<small>공지는 읽었는데 캘린더에는 없다</small></li>
+    </ul>
+  </div>
+  <div class="brand"><span class="mark">同</span>동학</div><div class="num">2 / 10</div>
+</section>
+
+<!-- 3 해결 -->
+<section class="slide">
+  <div class="eyebrow">해결</div>
+  <h2>한 학생의 4년을 옆에서 보는 AI 선배</h2>
+  <div class="cols3">
+    <div class="card soft"><div class="cap">01</div><b>성장형 프로필 상담</b><p>최성원의 1·2·3·4학년 프로필을 고르면 같은 질문에도 학년·이수과목·목표에 맞춘 다른 답.</p></div>
+    <div class="card soft"><div class="cap">02</div><b>졸업요건 체크</b><p>이수 학점 / 130학점 진행률과 아직 안 닫힌 요건을 홈 화면과 상담에서 바로 확인.</p></div>
+    <div class="card soft"><div class="cap">03</div><b>공지 → 캘린더</b><p>학과 공지를 붙여 넣으면 접수 마감만 뽑아 .ics로 저장. 하루 전 알림 포함.</p></div>
+  </div>
+  <p class="lead" style="margin-top:40px">챗봇 FAQ가 아니라, <b>내 학년에만 맞는 우선순위</b>를 짧게 말해 주는 선배. 위로 대신 "이번 학기 먼저 닫을 것"부터.</p>
+  <div class="brand"><span class="mark">同</span>동학</div><div class="num">3 / 10</div>
+</section>
+
+<!-- 4 같은 질문, 다른 답 -->
+<section class="slide">
+  <div class="eyebrow">데모 · 같은 질문 "이번 학기에 뭘 해야 할까?"</div>
+  <div class="shots">
+    <figure><div class="phone"><img src="shots/chat1.png" alt=""></div><figcaption><b>1학년의 최성원</b>자료구조입문·이산수학 먼저. 자격증은 아직.</figcaption></figure>
+    <figure><div class="phone"><img src="shots/chat3.png" alt=""></div><figcaption><b>3학년의 최성원</b>네이버클라우드 목표 → 클라우드컴퓨팅 + 예술 교양 2학점.</figcaption></figure>
+    <figure><div class="phone"><img src="shots/chat4.png" alt=""></div><figcaption><b>4학년의 최성원</b>수업보다 공인영어성적 제출이 먼저.</figcaption></figure>
+  </div>
+  <div class="brand"><span class="mark">同</span>동학</div><div class="num">4 / 10</div>
+</section>
+
+<!-- 5 홈 -->
+<section class="slide">
+  <div class="eyebrow">데모 · 홈</div>
+  <div class="cols" style="grid-template-columns:1fr 340px;align-items:center">
+    <div>
+      <h2>열자마자 "이번 학기 먼저 닫을 것"</h2>
+      <ul class="list">
+        <li>졸업 진행률 링<small>121 / 130학점, 빈칸 2개</small></li>
+        <li>지금 급한 것<small>학년마다 다른 두 장의 카드 — 누르면 바로 질문</small></li>
+        <li>장부에 남은 것<small>졸업사정 기준 미충족 요건</small></li>
+        <li>학년 바꾸기<small>같은 학생의 다른 시점으로 이동, 대화는 새로</small></li>
+      </ul>
+    </div>
+    <div class="phone"><img src="shots/home4.png" alt=""></div>
+  </div>
+  <div class="brand"><span class="mark">同</span>동학</div><div class="num">5 / 10</div>
+</section>
+
+<!-- 6 공지→캘린더 -->
+<section class="slide">
+  <div class="eyebrow">데모 · 공지 → 캘린더</div>
+  <div class="cols" style="grid-template-columns:1fr 340px;align-items:center">
+    <div>
+      <h2>공지를 붙여 넣으면 마감일만 .ics로</h2>
+      <div class="flow">
+        <div class="box">공지 붙여 넣기<small>교무처 토익 안내</small></div><div class="arrow">→</div>
+        <div class="box">접수 마감 추출<small>시험일 아님 · 9/1(화)</small></div><div class="arrow">→</div>
+        <div class="box">.ics 다운로드<small>하루 전 알림 포함</small></div>
+      </div>
+      <p class="lead">LLM이 날짜를 잘못 집어도 로컬 규칙이 접수 마감으로 교정한다. 폰에서 열면 캘린더에 바로 등록.</p>
+    </div>
+    <div class="phone"><img src="shots/notice.png" alt=""></div>
+  </div>
+  <div class="brand"><span class="mark">同</span>동학</div><div class="num">6 / 10</div>
+</section>
+
+<!-- 7 아키텍처 -->
+<section class="slide">
+  <div class="eyebrow">기술</div>
+  <h2>작게, 그러나 진짜로 동작하게</h2>
+  <div class="flow" style="margin-bottom:34px">
+    <div class="box">Vite + React 19<small>모바일 앱형 UI · 폰 프레임 데스크톱 뷰</small></div><div class="arrow">→</div>
+    <div class="box">Vercel Function<small>/api/chat · 키는 서버에만</small></div><div class="arrow">→</div>
+    <div class="box">OpenAI 호환 LLM<small>OpenRouter · gpt-4o-mini</small></div>
+  </div>
+  <table>
+    <tr><th>구성</th><th>방식</th></tr>
+    <tr><td><b>학생 프로필</b></td><td>한 학생의 1~4학년 4개 JSON. 학년·학기·이수과목·목표·졸업사정</td></tr>
+    <tr><td><b>학사 지식베이스</b></td><td>교육과정·졸업요건 텍스트를 시스템 프롬프트에 주입 (벡터DB 없음)</td></tr>
+    <tr><td><b>캘린더</b></td><td>.ics 표준 직접 생성 — TZID Asia/Seoul, 1시간 이벤트, 하루 전 VALARM</td></tr>
+    <tr><td><b>안전장치</b></td><td>IP당 분당 10회, 20초 타임아웃 + 재시도, 키 없으면 로컬 규칙 답변으로 대체</td></tr>
+  </table>
+  <div class="brand"><span class="mark">同</span>동학</div><div class="num">7 / 10</div>
+</section>
+
+<!-- 8 정직한 경계 -->
+<section class="slide">
+  <div class="eyebrow">데모의 경계</div>
+  <h2>진짜로 구현한 것과 연출한 것</h2>
+  <div class="cols">
+    <div class="card"><div class="cap">진짜</div><ul class="list"><li>LLM 상담 — 실제 API 호출, 학년별로 다른 답</li><li>.ics 생성 — 폰·PC 캘린더에 실제 등록</li><li>공지 마감일 추출 — 규칙 + LLM 이중 확인</li></ul></div>
+    <div class="card soft"><div class="cap">연출</div><ul class="list"><li>학생 데이터 — 가상 학생 최성원 4개 시점</li><li>교육과정 — 학과 공개 정보를 참고한 샘플</li><li>로그인·학사시스템 연동 — 없음</li></ul></div>
+  </div>
+  <p class="lead" style="margin-top:30px">실서비스에는 본인 인증과 학사시스템(향림통) 연동이 필요하다. 답변은 참고용이며 최종 확인은 학과 사무실.</p>
+  <div class="brand"><span class="mark">同</span>동학</div><div class="num">8 / 10</div>
+</section>
+
+<!-- 9 효과와 확장 -->
+<section class="slide">
+  <div class="eyebrow">효과 · 확장</div>
+  <h2>학생에겐 4년을 같이 크는 선배, 조교에겐 반복 상담을 덜어주는 조수</h2>
+  <div class="cols">
+    <ul class="list">
+      <li>저학년이 "뭘 물어야 하는지" 먼저 알게 된다</li>
+      <li>졸업 직전 발견하던 공백을 학기 단위로 앞당긴다</li>
+      <li>공지를 읽는 것과 일정에 넣는 것 사이의 틈을 없앤다</li>
+    </ul>
+    <ul class="list">
+      <li>학사시스템 연동<small>실제 이수 내역으로 프로필 자동 생성</small></li>
+      <li>프로필 자동 학습<small>대화에서 관심분야·목표를 갱신</small></li>
+      <li>전 학과 확대<small>학과별 교육과정표만 바꿔 끼우면 된다</small></li>
+    </ul>
+  </div>
+  <div class="brand"><span class="mark">同</span>동학</div><div class="num">9 / 10</div>
+</section>
+
+<!-- 10 링크 -->
+<section class="slide dark">
+  <div class="eyebrow">지금 써보기</div>
+  <h1 style="margin-top:60px">동학 同學</h1>
+  <p class="lead" style="margin-top:20px">폰으로 열면 앱처럼, PC로 열면 폰 프레임으로.<br>학년을 고르고 "이번 학기에 뭘 해야 할까?"를 물어보세요.</p>
+  <div class="url" style="margin-top:44px;color:#F0B279">https://donghak.vercel.app</div>
+  <p class="lead" style="margin-top:34px;font-size:16px">소스: github.com/SeongWon1123/Vibe · 데모는 가상 학생 데이터 사용</p>
+  <div class="brand"><span class="mark">同</span>동학 · 국립순천대학교 인공지능공학부 · 최성원</div>
+  <div class="num">10 / 10</div>
+</section>
+
+<script>const n=Number(location.hash.slice(1));if(n)window.scrollTo(0,(n-1)*720)</script>
+</body>
+</html>
