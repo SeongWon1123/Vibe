@@ -1,7 +1,6 @@
 # 동학 (同學, DongHak)
 
-4학년이 되어서야 알게 되는 것들을, 1학년부터 같이 봐 주는 국립순천대학교 AI 학사 선배.
-같은 질문 "이번 학기에 뭘 해야 할까?"에도 학년·이수과목·목표에 따라 다른 답을 준다.
+1학년의 관심사부터 4학년의 포트폴리오까지 — 학생의 성향과 관심분야를 학기마다 알아가며, 지금 해야 할 한 걸음을 알려주는 AI 학사 메이트.
 
 - 데모: https://donghak.vercel.app
 - 바이브코딩 경진대회 "우리가 만드는 더 나은 대학생활" 출품작 · 최성원
@@ -10,13 +9,14 @@
 
 | 기능 | 설명 |
 |---|---|
-| 성장형 프로필 상담 | 한 학생(최성원)의 1~4학년 프로필을 골라 같은 질문을 던지면 학년마다 다른 답 |
-| 졸업요건 체크 | 이수 학점 / 130학점 진행률과 아직 안 닫힌 요건 |
+| 성향·관심 파악 | 온보딩(학년·관심·목표) + 상담 키워드로 프로필이 자라고, 학년별 '다음 한 걸음' 제안 |
+| 학점 관리 · 시간표 | 학점 직접 입력, 시간표 입력 → 이번 학기 과목·학점 자동 반영, 졸업까지 남은 학점 계산 |
+| 선배 / 메이트 모드 | 말투 선택. 물어본 것에만 답함 |
 | 공지 → 캘린더 | 학과 공지를 붙여 넣으면 접수 마감만 뽑아 `.ics` 다운로드 (하루 전 알림 포함) |
 
 ## 화면
 
-인트로 → 학년 선택 → 홈 · 상담 · 공지 · 내 정보 (하단 4탭). 폰에서는 앱처럼, PC에서는 폰 프레임으로 보인다.
+인트로 → 온보딩(학년·관심·목표·학점·말투) → 시간표 → 홈 · 상담 · 공지 · 내 정보 (하단 4탭). 프로필은 브라우저에만 저장된다. 폰에서는 앱처럼, PC에서는 폰 프레임으로 보인다.
 
 ## 실행 (3줄)
 
@@ -40,11 +40,12 @@ LLM_MODEL=openai/gpt-4o-mini
 
 ```
 api/chat.js          LLM 프록시 (Vercel Function) — 키는 서버에만, IP당 분당 10회
-src/App.jsx          화면 상태(intro/pick/home/chat/notice/me)
+src/App.jsx          화면 상태(intro/onboard/timetable/home/chat/notice/me)
+src/hooks/useProfile.js 학년·관심·목표·학점·시간표·키워드 (localStorage)
 src/hooks/useChat.js 대화 상태 + 시스템 프롬프트 조립
-src/components/      Intro, PersonaPicker, Home, Chat, Notice, Profile, TabBar, Scene
-src/data/            personas.json (최성원 1~4학년), knowledge.js (학사 지식베이스 · 샘플)
-src/lib/             ics.js (.ics 생성), notice.js (공지에서 마감일 추출), urgency.js (로컬 조언)
+src/components/      Intro, Onboarding, Timetable, Home, Chat, Notice, Profile, TabBar, Scene
+src/data/            standard.js (학년별 표준 샘플·다음 한 걸음), calendar.js, notices.js, knowledge.js
+src/lib/             audit.js (학점 계산), ics.js, notice.js (마감일 추출), urgency.js (로컬 답변)
 docs/                계획 문서 00~07, 제출 문구, 디자인 참고 시안
 submission/          대표 이미지 · 발표자료 PDF 소스
 ```
@@ -53,4 +54,4 @@ submission/          대표 이미지 · 발표자료 PDF 소스
 
 Vercel. 환경변수 `LLM_API_KEY`, `LLM_BASE_URL`, `LLM_MODEL`을 Production에 등록하면 끝.
 
-※ 데모는 가상 학생 데이터와 샘플 교육과정을 사용한다. 실서비스에는 본인 인증과 학사시스템 연동이 필요하다.
+※ 교육과정·학사일정·공지는 샘플이다. 실서비스에는 본인 인증과 학사시스템 연동이 필요하다.

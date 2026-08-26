@@ -1,208 +1,74 @@
-export function studentName(persona) {
-  return persona.label.trim()
-}
-
-/** 부를 때 쓰는 이름. 최성원 → 성원 */
-export function callName(persona) {
-  const full = studentName(persona)
-  return full.length >= 3 ? full.slice(1) : full
-}
+import { audit } from './audit.js'
 
 export const MODES = {
-  senior: {
-    id: 'senior',
-    label: '선배 모드',
-    short: '선배',
-    desc: '먼저 겪어 본 선배가 피드백을 줘요. 다정한 반말.',
-  },
-  mate: {
-    id: 'mate',
-    label: '메이트 모드',
-    short: '메이트',
-    desc: '같이 학기를 굴리는 학업 메이트. 편한 친구 말투.',
-  },
+  senior: { id: 'senior', label: '선배 모드', short: '선배', desc: '먼저 겪어 본 선배가 피드백을 줘요. 다정한 반말.' },
+  mate: { id: 'mate', label: '메이트 모드', short: '메이트', desc: '같이 학기를 굴리는 학업 메이트. 편한 친구 말투.' },
 }
 
-/** 홈 "이번 학기 체크" 카드 */
-export function urgency(persona) {
-  if (persona.id === 'freshman') {
-    return [
-      {
-        when: '이번 학기',
-        title: '자료구조입문',
-        detail: '2학년 전공의 출발점. 여기서 막히면 뒤가 다 밀려요',
-        ask: '자료구조입문이 왜 중요한지 알려줘',
-      },
-      {
-        when: '2학기 안에',
-        title: '교양 영역 하나 열기',
-        detail: '음악의이해로 예술 영역을 먼저 채워 두면 나중에 편해요',
-        ask: '들을 만한 교양 추천해줘',
-      },
-    ]
+/** 인사말은 한 문장. 조언은 물어봐야 나온다. */
+export function openingNote(profile, mode = 'senior') {
+  const g = profile.grade
+  if (mode === 'mate') {
+    return g === 4 ? '마지막 학기네. 뭐부터 같이 볼까?' : `${profile.semester} 시작! 뭐부터 볼까?`
   }
-  if (persona.id === 'sophomore') {
-    return [
-      {
-        when: '이번 학기',
-        title: '운영체제 · 알고리즘',
-        detail: '3학년 전공과 코딩테스트가 여기서 갈려요',
-        ask: '이번 학기에 뭘 해야 할까?',
-      },
-      {
-        when: '다음 학기까지',
-        title: '외국어 교양 1과목',
-        detail: '4영역이 비어 있어요. 영어회화 한 과목이면 닫혀요',
-        ask: '들을 만한 교양 추천해줘',
-      },
-    ]
-  }
-  if (persona.id === 'junior') {
-    return [
-      {
-        when: '이번 학기',
-        title: '클라우드컴퓨팅',
-        detail: '네이버클라우드 목표면 지금 듣고 방학에 NCA까지',
-        ask: '이번 학기에 뭘 해야 할까?',
-      },
-      {
-        when: '졸업 전까지',
-        title: '예술 교양 2학점',
-        detail: '전공만 쌓으면 교양 영역이 안 닫혀요',
-        ask: '들을 만한 교양 추천해줘',
-      },
-    ]
-  }
-  return [
-    {
-      when: '10/30 마감',
-      title: '졸업작품 발표 신청',
-      detail: '캡스톤디자인2 결과물을 등록해야 최종발표를 할 수 있어요',
-      ask: '졸업까지 뭐가 남았어?',
-    },
-    {
-      when: '11/6 마감',
-      title: '졸업인증 서류',
-      detail: '자격증·공모전·어학 중 하나. NCA 합격증이면 돼요',
-      ask: '졸업인증 뭘로 내는 게 좋을까?',
-    },
-  ]
+  return g === 4 ? '마지막 학기구나. 뭐가 궁금해?' : `${profile.semester}네. 뭐가 궁금해?`
 }
 
-const OPENING = {
-  senior: {
-    freshman: (n) => `${n}아, 1학년 2학기 잘 버티고 있어? 프로그래밍기초 끝냈으면 이번 학기는 자료구조입문이랑 이산수학이 핵심이야.
-자격증은 지금 신경 안 써도 돼. 뭐 궁금한 거 있으면 편하게 물어봐.`,
-    sophomore: (n) => `${n}아, 2학년 2학기면 전공 기둥 세우는 학기야. 운영체제·알고리즘·데이터베이스·확통, 이 넷은 나중에 진로가 뭐든 다 써.
-진로 아직 못 정했어도 괜찮아. 같이 정리해 보자.`,
-    junior: (n) => `${n}아, 네이버클라우드 쪽으로 마음 굳혔다며. 그럼 이번 학기 클라우드컴퓨팅은 꼭 챙기고, 방학에 NCA 하나 따 두면 좋아.
-예술 교양 2학점도 비어 있으니까 같이 보자.`,
-    senior: (n) => `${n}아, 121학점이면 수업은 거의 끝났네. 남은 건 졸업작품 최종발표랑 졸업인증 서류야.
-발표 신청이 10/30 마감이니까 그것부터 챙기자. 공지 오면 공지 탭에 붙여 넣어 줘, 마감일 캘린더에 넣어 줄게.`,
-  },
-  mate: {
-    freshman: (n) => `${n}, 2학기 시작했네! 우리 이번 학기는 자료구조입문이랑 이산수학만 확실히 잡자.
-자격증은 아직 아니고. 뭐부터 볼까?`,
-    sophomore: (n) => `${n}, 이번 학기 운영체제·알고리즘·DB·확통 풀세트네. 진로 아직 애매해도 이 넷은 어디 가든 쓰이니까 같이 버텨 보자.
-과제 일정이랑 같이 정리해 줄까?`,
-    junior: (n) => `${n}, 네이버클라우드 가기로 했으니 이번 학기는 클라우드컴퓨팅이 메인이야. 방학엔 NCA 같이 준비하자.
-예술 교양 2학점 남은 것도 잊지 말고!`,
-    senior: (n) => `${n}, 이제 진짜 마지막 학기다. 졸업작품 발표 신청(10/30)이랑 졸업인증 서류(11/6), 이 두 개만 넘기면 끝이야.
-공지 붙여 넣으면 마감일 캘린더에 바로 넣어 줄게.`,
-  },
-}
-
-export function openingNote(persona, mode = 'senior') {
-  const table = OPENING[mode] || OPENING.senior
-  return (table[persona.id] || table.senior)(callName(persona))
-}
-
-/** API 키가 없거나 응답이 없을 때 쓰는 로컬 답변. 선배 톤. */
-export function localAdvice(persona, question) {
-  const n = callName(persona)
+/** API 키가 없거나 응답이 없을 때 — 물어본 것에만 짧게. 선배 톤. */
+export function localAdvice(profile, question) {
   const q = question.replace(/\s+/g, '')
-  const audit = persona.profile.gradAudit
+  const a = audit(profile)
+  const courses = profile.timetable.map((c) => c.name)
+  const first = profile.interests[0]
 
-  if (/저장|캘린더|ics|마감/i.test(question) && /공지|안내|접수|교무|학과/i.test(question)) {
-    return null
+  if (/저장|캘린더|ics|마감/i.test(question) && /공지|안내|접수|교무|학과/i.test(question)) return null
+
+  if (q.includes('포트폴리오')) {
+    return `순서는 이렇게 가면 돼.
+1. GitHub 프로필이랑 README부터 — 첫인상이야
+2. 캡스톤을 "문제 → 내가 한 일 → 결과" 한 장으로
+3. 자격증·수상은 한 줄씩만
+지금 시간표에 ${courses.includes('캡스톤디자인2') ? '캡스톤디자인2가 있으니 그 결과물이 메인' : '캡스톤이 없으면 개인 프로젝트 하나를 메인으로'}.`
   }
-
-  if (q.includes('졸업인증')) {
-    return `${n}아, 졸업인증은 자격증·공모전·어학 중 하나만 내면 돼.
-네이버클라우드 목표면 **NCA**가 제일 자연스러워. 취업 준비랑 같이 가니까.
-- 이미 딴 자격증이 있으면 그걸로 바로 제출
-- 없으면 NCA 시험 일정부터 잡고, 11/6 전에 합격증 제출
-정보처리기사도 인정되는데 일정이 빠듯할 수 있어.`
+  if (q.includes('이력서')) {
+    return `이력서는 한 장이면 충분해.
+- 프로젝트 2~3개: 뭘 만들었는지보다 어떤 문제를 어떻게 풀었는지
+- 기술 스택은 실제로 써 본 것만
+- 자격증·수상·인턴
+${profile.goal === '취업' ? '지원 직무 키워드를 상단에 두면 눈에 잘 띄어.' : '목표가 정해지면 그에 맞춰 순서를 바꾸자.'}`
   }
-
+  if (q.includes('자격증')) {
+    if (profile.interests.includes('클라우드·인프라')) return `클라우드 쪽이면 **NCA**(네이버클라우드)가 제일 자연스럽고, 다음이 AWS Cloud Practitioner. 둘 다 졸업인증에 쓸 수 있어.`
+    if (profile.interests.includes('AI·데이터')) return `데이터 쪽이면 **SQLD**가 무난하고, 빅데이터분석기사는 4학년 때. 공모전 수상도 졸업인증으로 인정돼.`
+    return `정보처리기사가 가장 범용이야. 관심 분야가 정해지면 그쪽 자격증으로 바꿔도 늦지 않아.`
+  }
+  if (q.includes('활동') || q.includes('동아리')) {
+    return first && first !== '아직 모르겠어'
+      ? `${first} 쪽이면 학과 스터디나 관련 동아리에 먼저 들어가 봐. 한 학기 해 보고 재미없으면 바꿔도 돼.`
+      : `아직 모르겠으면 여러 개 살짝 발 담그는 게 맞아. 코딩 동아리 하나, 흥미 위주 하나. 한 학기면 감이 와.`
+  }
   if (q.includes('졸업')) {
-    if (!audit) {
-      return `${n}아, 1학년은 아직 졸업사정 대상이 아니라 걱정 안 해도 돼.
-지금은 교양 영역을 하나씩 열어 두고, 자료구조입문·이산수학 같은 전공 기초를 잘 다지는 게 전부야.
-그거면 2학년이 훨씬 편해져.`
-    }
-    if (persona.id === 'sophomore') {
-      return `${n}아, 2학년은 졸업 체크보다 전공 기둥이 먼저야. 그래도 지금 보이는 빈칸은 하나 있어.
-- [ ] ${audit.missing.join('\n- [ ] ')}
-
-학점은 ${audit.totalCredits}. 이번 학기는 운영체제·알고리즘·DB·확통 잘 마무리하고, 외국어 교양은 다음 학기에 넣어도 늦지 않아.`
-    }
-    const missing = audit.missing.map((item) => `- [ ] ${item}`).join('\n')
-    return `${n}아, 지금 남은 건 이거야.
-${missing}
-
-학점은 ${audit.totalCredits}까지 왔으니까 수업 추가보다 이 빈칸부터 닫는 게 우선이야. 발표 신청 마감(10/30) 놓치지 말자.`
+    return `지금 입력된 기준으로 보면:
+- 이수 ${profile.credits.total}학점 + 이번 학기 ${a.planned}학점 = 예상 ${a.expected}학점
+- 130학점까지 ${a.remaining}학점 남음
+${a.missing.length ? '- ' + a.missing.join('\n- ') : '- 학점 요건은 채워져. 졸업인증·졸업작품만 확인'}
+숫자는 내 정보에서 고칠 수 있어.`
   }
-
   if (q.includes('교양')) {
-    if (persona.id === 'sophomore') {
-      return `${n}아, 4영역 외국어가 비어 있어. 영어회화나 비즈니스영어 중 하나면 닫혀.
-전공 네 과목이랑 같은 학기에 넣어도 부담은 크지 않아.`
-    }
-    if (persona.id === 'junior') {
-      return `${n}아, 예술 교양이 비어 있어. 음악의이해나 현대예술의이해처럼 가벼운 2학점부터 넣자.
-데이터리터러시만 반복해서 듣는 건 졸업사정에서 손해야.`
-    }
-    if (persona.id === 'senior') {
-      return `${n}아, 교양은 다 채웠어. 지금은 교양보다 졸업작품 발표 신청이랑 졸업인증 서류가 먼저야.
-혹시 영역이 헷갈리면 향림통 졸업사정 조회 한 번 해 보자.`
-    }
-    return `${n}아, 지금은 탐색 구간이라 한 영역에 몰지 마.
-음악의이해로 예술 영역, 영어회화로 외국어 영역 하나씩이면 충분해.
-전공이 재밌어지면 그때 교양은 자연스럽게 정리돼.`
+    return a.generalLeft > 0
+      ? `교양이 ${a.generalLeft}학점 남았어. ${first === '게임' ? '영상예술입문' : '음악의이해나 현대예술의이해'}처럼 부담 적은 2학점부터 넣자.`
+      : `교양 학점은 다 채웠어. 영역이 비었는지는 향림통 졸업사정에서 한 번만 확인해.`
   }
-
+  if (q.includes('3학년') || q.includes('미리')) {
+    return `3학년은 트랙이 갈리는 해야. ${first === '클라우드·인프라' ? '클라우드컴퓨팅·웹서버프로그래밍' : first === 'AI·데이터' ? '머신러닝·데이터엔지니어링' : '네트워크·머신러닝을 둘 다 들어 보고'} 쪽으로 잡으면 돼.`
+  }
+  if (q.includes('프로젝트')) {
+    return `작게, 배포까지가 포인트야. ${first === '웹 개발' ? '게시판 하나를 로그인까지 붙여서 배포' : first === '클라우드·인프라' ? '리눅스 서버에 직접 올려 보는 홈랩' : '관심 있는 데이터로 간단한 분석 페이지'} 정도면 충분해.`
+  }
   if (q.includes('자료구조')) {
-    return `${n}아, 자료구조입문은 2학년 자료구조·알고리즘의 밑바탕이야.
-여기서 리스트·스택·큐·트리를 손에 익혀 두면 알고리즘 수업이 훨씬 수월해.
-과제는 직접 구현해 보는 게 답이야. 복붙하면 나중에 두 배로 돌아와.`
+    return `리스트·스택·큐·트리를 직접 구현해 보는 게 답이야. 과제 복붙하면 알고리즘 때 두 배로 돌아와.`
   }
-
-  if (persona.id === 'freshman') {
-    return `${n}아, 이번 학기는 기초만 잘 닫으면 돼.
-- 자료구조입문
-- 이산수학
-- 동아리나 작은 토이 프로젝트 하나
-자격증은 아직 일러. 프로그래밍기초 위에 차근차근 쌓는 학기야.`
-  }
-  if (persona.id === 'sophomore') {
-    return `${n}아, 2학년 2학기는 이 네 개가 핵심이야.
-- 운영체제
-- 알고리즘
-- 데이터베이스
-- 확률및통계
-나중에 클라우드로 가든 AI로 가든 다 쓰이니까 지금 비우면 3학년이 고생해. 자격증은 방학에 보자.`
-  }
-  if (persona.id === 'junior') {
-    return `${n}아, 네이버클라우드가 목표면 이번 학기는 이렇게 가자.
-- 클라우드컴퓨팅 수강
-- 리눅스·네트워크는 이미 있으니 방학에 NCA 준비
-- 예술 교양 2학점 채우기
-공모전은 방학에 넣는 편이 시간표랑 안 싸워.`
-  }
-  return `${n}아, 이번 학기에 수업을 더 넣을 필요는 없어.
-- 졸업작품 발표 신청 (10/30 마감)
-- 졸업인증 서류 (11/6 마감) — NCA 합격증이면 돼
-- 캡스톤디자인2 결과물 마무리
-공지 오면 붙여 넣어 줘. 마감일 캘린더에 넣어 줄게.`
+  // 이번 학기 뭐 해야 하나
+  return `시간표 기준으로는 ${courses.slice(0, 3).join(', ')}${courses.length > 3 ? ' 등' : ''} ${a.planned}학점이야.
+${profile.grade === 1 ? '기초 과목 잘 잡고, 관심 분야 하나만 찔러 보면 충분해.' : profile.grade === 2 ? '전공 기둥 학기야. 트랙은 이 과목들 듣다 보면 보여.' : profile.grade === 3 ? '수업 + 자격증 하나. 인턴은 겨울에 지원.' : '수업보다 포트폴리오·졸업작품이 우선이야.'}`
 }

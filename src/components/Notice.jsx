@@ -1,7 +1,7 @@
 import { noticesFor } from '../data/notices.js'
 
-export default function Notice({ persona, draft, setDraft, onNotice }) {
-  const samples = noticesFor(persona.profile.grade, 4)
+export default function Notice({ grade, draft, setDraft, onNotice }) {
+  const samples = noticesFor(grade, 4)
 
   function submit(event) {
     event.preventDefault()

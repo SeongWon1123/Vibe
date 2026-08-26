@@ -1,33 +1,37 @@
-import { QUICK } from '../hooks/useChat.js'
 import { ddayLabel, upcoming, weekOfTerm } from '../data/calendar.js'
 import { noticesFor } from '../data/notices.js'
-import { callName, urgency } from '../lib/urgency.js'
+import { GRAD, PORTFOLIO, nextSteps, quickQuestions } from '../data/standard.js'
+import { audit } from '../lib/audit.js'
 import Mark from './Mark.jsx'
 import Scene from './Scene.jsx'
+import { TimetableGrid } from './Timetable.jsx'
 
-const GRAD_CREDITS = 130
-
-function greeting(name, hour, week) {
-  if (week === 0) return `${name}아, 방학 잘 보내고 있어?`
-  if (hour < 11) return `${name}아, 좋은 아침`
-  if (hour < 17) return `${name}아, 오후 수업 잘 듣고 있어?`
-  if (hour < 22) return `${name}아, 오늘 하루 어땠어?`
-  return `${name}아, 아직 안 자?`
+function greeting(hour, week) {
+  if (week === 0) return '방학 잘 보내고 있어?'
+  if (hour < 11) return '좋은 아침'
+  if (hour < 17) return '오후 수업 잘 듣고 있어?'
+  if (hour < 22) return '오늘 하루 어땠어?'
+  return '아직 안 자?'
 }
 
-export default function Home({ persona, onAsk, onGoChat, onOpenNotice, onChangeYear }) {
-  const name = callName(persona)
-  const { profile } = persona
-  const audit = profile.gradAudit
+function insight(profile) {
+  const k = profile.keywords
+  const i = profile.interests.filter((x) => x !== '아직 모르겠어')
+  if (k.length >= 2) return `요즘 상담에서 ${k.slice(-2).join('·')} 얘기가 자주 나와. 그쪽으로 관심이 모이는 중.`
+  if (i.length) return `${i[0]} 쪽 관심으로 시작했어. 상담하면서 더 알아갈게.`
+  return '아직 관심 분야를 찾는 중. 상담할수록 동학이 너를 더 잘 알게 돼.'
+}
+
+export default function Home({ profile, update, onAsk, onGoChat, onOpenNotice, onEditTimetable }) {
   const now = new Date()
   const week = weekOfTerm(now)
   const events = upcoming(profile.grade, now, 3)
   const notices = noticesFor(profile.grade, 2)
-  const jobs = urgency(persona)
-  const missing = audit?.missing ?? []
-  const ratio = audit ? Math.min(1, audit.totalCredits / GRAD_CREDITS) : 0
+  const steps = nextSteps(profile)
+  const a = audit(profile)
   const dash = 113
   const next = events[0]
+  const chips = [...profile.interests.filter((x) => x !== '아직 모르겠어'), ...profile.keywords].slice(0, 6)
 
   return (
     <div className="screen">
@@ -35,16 +39,14 @@ export default function Home({ persona, onAsk, onGoChat, onOpenNotice, onChangeY
         <Scene variant="hero" />
         <div className="hero-top">
           <Mark glass light />
-          <button type="button" className="year-pill" onClick={onChangeYear}>
-            {profile.grade}학년 · 바꾸기
-          </button>
+          <span className="year-pill">{profile.grade}학년 · {profile.goal}</span>
         </div>
         <div className="hero-content">
           <div className="hero-eyebrow">
             {profile.semester} · {week === 0 ? '개강 전' : `${week}주차`}
           </div>
           <div className="hero-title">
-            {greeting(name, now.getHours(), week)}
+            {greeting(now.getHours(), week)}
             <br />
             {next ? `${next.title}까지 ${ddayLabel(next.dday)}` : '이번 주도 차근차근'}
           </div>
@@ -61,37 +63,99 @@ export default function Home({ persona, onAsk, onGoChat, onOpenNotice, onChangeY
         <div className="ring" aria-hidden="true">
           <svg viewBox="0 0 42 42">
             <circle cx="21" cy="21" r="18" fill="none" stroke="#ECE7E1" strokeWidth="3.5" />
-            <circle
-              cx="21"
-              cy="21"
-              r="18"
-              fill="none"
-              stroke="var(--dusk)"
-              strokeWidth="3.5"
-              strokeDasharray={dash}
-              strokeDashoffset={dash - dash * ratio}
-              strokeLinecap="round"
-              transform="rotate(-90 21 21)"
-            />
+            <circle cx="21" cy="21" r="18" fill="none" stroke="#E9C7B4" strokeWidth="3.5" strokeDasharray={dash} strokeDashoffset={dash - dash * a.expectedRatio} strokeLinecap="round" transform="rotate(-90 21 21)" />
+            <circle cx="21" cy="21" r="18" fill="none" stroke="var(--dusk)" strokeWidth="3.5" strokeDasharray={dash} strokeDashoffset={dash - dash * a.ratio} strokeLinecap="round" transform="rotate(-90 21 21)" />
           </svg>
-          {audit ? `${Math.round(ratio * 100)}%` : `${profile.grade}학년`}
+          {Math.round(a.ratio * 100)}%
         </div>
         <div>
-          <b>{audit ? `졸업까지 ${audit.totalCredits} / ${GRAD_CREDITS}학점` : '졸업사정은 아직'}</b>
+          <b>
+            {profile.credits.total} / {GRAD.total}학점
+          </b>
           <div className="meta">
-            {audit
-              ? missing.length
-                ? `남은 요건 ${missing.length}개 · ${missing[0]}`
-                : '남은 요건 없음'
-              : '지금은 기초 과목만 잘 챙기면 돼요'}
+            이번 학기 +{a.planned} → 예상 {a.expected} · 남은 {a.remaining}학점
           </div>
           <div className="rate">
-            <i>★</i> 이수 {profile.completedCourses.length}과목 · 이번 학기 {profile.currentCourses.length}과목
+            전공 {profile.credits.major}/{GRAD.major} · 교양 {profile.credits.general}/{GRAD.general}
           </div>
         </div>
         <button type="button" className="resume" onClick={() => onAsk('졸업까지 뭐가 남았어?')}>
           자세히
         </button>
+      </div>
+
+      <div className="sec">
+        <div className="sec-head">
+          <div className="sec-title">동학이 파악한 나</div>
+        </div>
+        <div className="record">
+          <div className="chips" style={{ marginBottom: 8 }}>
+            {chips.length ? chips.map((c) => (
+              <span key={c} className="chip warn">
+                {c}
+              </span>
+            )) : <span className="chip">아직 탐색 중</span>}
+          </div>
+          <b style={{ marginBottom: 0, fontWeight: 500, color: '#4a433e' }}>{insight(profile)}</b>
+        </div>
+      </div>
+
+      <div className="sec">
+        <div className="sec-head">
+          <div className="sec-title">다음 한 걸음</div>
+          <button type="button" className="more" onClick={() => onAsk('이번 학기에 뭘 해야 할까?')}>
+            동학에게 묻기
+          </button>
+        </div>
+        <div className="spots">
+          {steps.map((s, index) => (
+            <button key={s.title} type="button" className="spot" onClick={() => onAsk(s.ask)}>
+              <div className={index === 0 ? 'thumb late' : 'thumb'}>
+                <span className="when">{s.when}</span>
+                <span className="big">{s.title}</span>
+              </div>
+              <div className="cap">{s.detail}</div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {profile.grade === 4 && (
+        <div className="sec">
+          <div className="sec-head">
+            <div className="sec-title">포트폴리오 체크</div>
+            <span className="more">
+              {profile.portfolio.length}/{PORTFOLIO.length}
+            </span>
+          </div>
+          <div className="record">
+            {PORTFOLIO.map((item) => {
+              const on = profile.portfolio.includes(item.id)
+              return (
+                <label key={item.id} className="check">
+                  <input type="checkbox" checked={on} onChange={() => update({ portfolio: on ? profile.portfolio.filter((x) => x !== item.id) : [...profile.portfolio, item.id] })} />
+                  <span className={on ? 'done' : ''}>{item.label}</span>
+                </label>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      <div className="sec">
+        <div className="sec-head">
+          <div className="sec-title">이번 학기 시간표</div>
+          <button type="button" className="more" onClick={onEditTimetable}>
+            편집
+          </button>
+        </div>
+        {profile.timetable.length ? (
+          <TimetableGrid timetable={profile.timetable} compact />
+        ) : (
+          <button type="button" className="feed-tease" onClick={onEditTimetable}>
+            <p>시간표를 넣으면 과목·학점이 자동으로 반영돼요</p>
+          </button>
+        )}
       </div>
 
       <div className="sec">
@@ -110,56 +174,6 @@ export default function Home({ persona, onAsk, onGoChat, onOpenNotice, onChangeY
             </li>
           ))}
         </ul>
-      </div>
-
-      <div className="sec">
-        <div className="sec-head">
-          <div className="sec-title">이번 학기 체크</div>
-          <button type="button" className="more" onClick={() => onAsk('이번 학기에 뭘 해야 할까?')}>
-            동학에게 묻기
-          </button>
-        </div>
-        <div className="spots">
-          {jobs.map((job, index) => (
-            <button key={job.title} type="button" className="spot" onClick={() => onAsk(job.ask)}>
-              <div className={index === 0 ? 'thumb late' : 'thumb'}>
-                <span className="when">{job.when}</span>
-                <span className="big">{job.title}</span>
-              </div>
-              <div className="cap">{job.detail}</div>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="sec">
-        <div className="sec-head">
-          <div className="sec-title">이번 학기 듣는 과목</div>
-        </div>
-        <div className="record">
-          <div className="cap">{profile.semester} 수강 신청 기준</div>
-          <div className="chips">
-            {profile.currentCourses.map((course) => (
-              <span key={course} className="chip">
-                {course}
-              </span>
-            ))}
-          </div>
-          {missing.length > 0 && (
-            <>
-              <div className="cap" style={{ marginTop: 12 }}>
-                졸업사정에서 아직 안 닫힌 것
-              </div>
-              <div className="chips">
-                {missing.map((item) => (
-                  <span key={item} className="chip warn">
-                    {item}
-                  </span>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
       </div>
 
       {notices.length > 0 && (
@@ -187,9 +201,9 @@ export default function Home({ persona, onAsk, onGoChat, onOpenNotice, onChangeY
           <div className="sec-title">자주 묻는 질문</div>
         </div>
         <div className="chips">
-          {QUICK.map((item) => (
-            <button key={item.send} type="button" className="fchip" onClick={() => onAsk(item.send)}>
-              {item.send}
+          {quickQuestions(profile.grade).map((q) => (
+            <button key={q} type="button" className="fchip" onClick={() => onAsk(q)}>
+              {q}
             </button>
           ))}
         </div>

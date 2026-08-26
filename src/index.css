@@ -813,6 +813,11 @@ button {
   color: rgba(255, 255, 255, 0.75);
 }
 
+.wopt.on .who,
+.wopt.on .grade {
+  color: #fff;
+}
+
 .wiz-note {
   padding: 22px 32px 0;
   font-size: 11px;
@@ -1485,4 +1490,190 @@ button {
 
 .sec .chips .fchip {
   font-size: 13px;
+}
+
+/* ── 온보딩 입력 · 시간표 · 학점 바 · 체크 ── */
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px 26px 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field span {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sub);
+}
+
+.field input,
+.in {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 16px;
+  background: #fff;
+  outline: none;
+  width: 100%;
+}
+
+.field input:focus,
+.in:focus {
+  border-color: var(--dusk);
+}
+
+.in.sm {
+  width: auto;
+  flex: 1;
+  min-width: 64px;
+  padding: 10px 8px;
+  font-size: 13px;
+}
+
+.tt-form {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.tt-form .in:first-child {
+  flex: 2.2;
+}
+
+.unit {
+  font-size: 13px;
+  color: var(--faint);
+  flex-shrink: 0;
+}
+
+.year-pill.dark {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+.tt {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  font-size: 11px;
+}
+
+.tt-head,
+.tt-row {
+  display: grid;
+  grid-template-columns: 40px repeat(5, 1fr);
+}
+
+.tt.compact .tt-head,
+.tt.compact .tt-row {
+  grid-template-columns: 22px repeat(5, 1fr);
+}
+
+.tt-head span {
+  padding: 7px 0;
+  text-align: center;
+  font-weight: 700;
+  color: var(--faint);
+  background: var(--surface);
+}
+
+.tt-time {
+  font-size: 10px;
+  color: var(--faint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 1px solid var(--surface);
+}
+
+.tt-cell {
+  min-height: 34px;
+  border-top: 1px solid var(--surface);
+  border-left: 1px solid var(--surface);
+  padding: 4px 3px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.03em;
+  word-break: keep-all;
+  color: var(--ink);
+}
+
+.tt.compact .tt-cell {
+  min-height: 28px;
+  font-size: 10px;
+}
+
+.tt-cell.on {
+  border-left-color: #fff;
+}
+
+.bar-row {
+  padding: 8px 0;
+}
+
+.bar-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.bar-head small {
+  color: var(--dusk);
+  font-weight: 700;
+}
+
+.bar-track {
+  position: relative;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.bar-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: 4px;
+  background: var(--dusk);
+}
+
+.bar-fill.ghost {
+  background: #e9c7b4;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.check input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--dusk);
+}
+
+.check .done {
+  color: var(--faint);
+  text-decoration: line-through;
+}
+
+.fchip.on {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--ink);
 }

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Markdown from 'react-markdown'
-import { QUICK, isPastedNotice } from '../hooks/useChat.js'
+import { quickQuestions } from '../data/standard.js'
+import { isPastedNotice } from '../hooks/useChat.js'
 import { parseIcsPayload } from '../lib/ics.js'
 import { MODES } from '../lib/urgency.js'
 import IcsButton from './IcsButton.jsx'
@@ -10,7 +11,7 @@ function toMarkdown(text) {
   return text.replace(/\n/g, '  \n')
 }
 
-export default function Chat({ persona, mode, onChangeMode, messages, loading, send }) {
+export default function Chat({ profile, mode, onChangeMode, messages, loading, send }) {
   const [input, setInput] = useState('')
   const bottomRef = useRef(null)
 
@@ -30,19 +31,12 @@ export default function Chat({ persona, mode, onChangeMode, messages, loading, s
           <div>
             <h1>동학</h1>
             <p>
-              {persona.label}의 {persona.profile.grade}학년 · {persona.profile.semester}
+              {profile.semester} · {profile.goal}
             </p>
           </div>
           <div className="seg" role="radiogroup" aria-label="말투">
             {Object.values(MODES).map((m) => (
-              <button
-                key={m.id}
-                type="button"
-                role="radio"
-                aria-checked={mode === m.id}
-                className={mode === m.id ? 'on' : ''}
-                onClick={() => onChangeMode(m.id)}
-              >
+              <button key={m.id} type="button" role="radio" aria-checked={mode === m.id} className={mode === m.id ? 'on' : ''} onClick={() => onChangeMode(m.id)}>
                 {m.short}
               </button>
             ))}
@@ -52,8 +46,7 @@ export default function Chat({ persona, mode, onChangeMode, messages, loading, s
           {messages.map((message, index) => {
             if (message.role === 'user') {
               if (isPastedNotice(message.content)) {
-                const firstLine =
-                  message.content.split('\n').find((line) => line.trim()) || '학과 공지'
+                const firstLine = message.content.split('\n').find((line) => line.trim()) || '학과 공지'
                 return (
                   <article key={index} className="clip">
                     <span>붙여 넣은 공지</span>
@@ -67,11 +60,7 @@ export default function Chat({ persona, mode, onChangeMode, messages, loading, s
                 </article>
               )
             }
-
-            const parsed = message.greeting
-              ? { text: message.content, event: null }
-              : parseIcsPayload(message.content)
-
+            const parsed = message.greeting ? { text: message.content, event: null } : parseIcsPayload(message.content)
             return (
               <div key={index} className="you-row">
                 {index === 0 && (
@@ -96,15 +85,9 @@ export default function Chat({ persona, mode, onChangeMode, messages, loading, s
 
       <div className="composer">
         <div className="quick">
-          {QUICK.map((item) => (
-            <button
-              key={item.send}
-              type="button"
-              className="fchip"
-              disabled={loading}
-              onClick={() => submit(item.send)}
-            >
-              {item.show}
+          {quickQuestions(profile.grade).map((q) => (
+            <button key={q} type="button" className="fchip" disabled={loading} onClick={() => submit(q)}>
+              {q}
             </button>
           ))}
         </div>
