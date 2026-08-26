@@ -23,7 +23,7 @@ export default function Intro({ onPick, onBrowse }) {
         </div>
         <div className="intro-bottom">
           <button type="button" className="btn-ghost" onClick={onBrowse}>
-            1학년의 나로 둘러보기
+            1학년의 성원이로 둘러보기
           </button>
           <button type="button" className="btn-solid" onClick={onPick}>
             내 학년 고르고 시작하기

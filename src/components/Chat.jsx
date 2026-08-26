@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import Markdown from 'react-markdown'
 import { QUICK, isPastedNotice } from '../hooks/useChat.js'
 import { parseIcsPayload } from '../lib/ics.js'
+import { MODES } from '../lib/urgency.js'
 import IcsButton from './IcsButton.jsx'
 import Loading from './Loading.jsx'
 
@@ -9,7 +10,7 @@ function toMarkdown(text) {
   return text.replace(/\n/g, '  \n')
 }
 
-export default function Chat({ persona, messages, loading, send }) {
+export default function Chat({ persona, mode, onChangeMode, messages, loading, send }) {
   const [input, setInput] = useState('')
   const bottomRef = useRef(null)
 
@@ -25,11 +26,27 @@ export default function Chat({ persona, messages, loading, send }) {
   return (
     <>
       <div className="screen chat-screen">
-        <div className="phead">
-          <h1>상담</h1>
-          <p>
-            {persona.label}의 {persona.profile.grade}학년 · 같은 질문, 학년마다 다른 답
-          </p>
+        <div className="phead phead-row">
+          <div>
+            <h1>동학</h1>
+            <p>
+              {persona.label}의 {persona.profile.grade}학년 · {persona.profile.semester}
+            </p>
+          </div>
+          <div className="seg" role="radiogroup" aria-label="말투">
+            {Object.values(MODES).map((m) => (
+              <button
+                key={m.id}
+                type="button"
+                role="radio"
+                aria-checked={mode === m.id}
+                className={mode === m.id ? 'on' : ''}
+                onClick={() => onChangeMode(m.id)}
+              >
+                {m.short}
+              </button>
+            ))}
+          </div>
         </div>
         <div className="thread">
           {messages.map((message, index) => {
@@ -60,7 +77,7 @@ export default function Chat({ persona, messages, loading, send }) {
                 {index === 0 && (
                   <div className="who">
                     <div className="logo-mark">同</div>
-                    동학
+                    동학 · {MODES[mode]?.label}
                   </div>
                 )}
                 <article className="bubble you">
@@ -107,7 +124,7 @@ export default function Chat({ persona, messages, loading, send }) {
                 submit(input)
               }
             }}
-            placeholder="이번 학기, 졸업, 교양…"
+            placeholder="궁금한 거 편하게 물어봐"
             rows={1}
             aria-label="질문 입력"
           />

@@ -1,4 +1,4 @@
-import { studentName } from '../lib/urgency.js'
+import { MODES, callName } from '../lib/urgency.js'
 
 function Chevron() {
   return (
@@ -8,19 +8,19 @@ function Chevron() {
   )
 }
 
-export default function Profile({ persona, onChangeYear, onGoIntro }) {
-  const name = studentName(persona)
+export default function Profile({ persona, mode, onChangeMode, onChangeYear, onGoIntro }) {
+  const name = callName(persona)
   const { profile } = persona
   const audit = profile.gradAudit
-  const goal = profile.goal === '미정' ? '진로 미정' : profile.goal
+  const goal = profile.goal === '미정' ? '진로 고민 중' : profile.goal
 
   return (
     <div className="screen">
       <div className="p-head">
         <div className="p-avatar">{name.slice(0, 1)}</div>
-        <b>{name}</b>
+        <b>{persona.label}</b>
         <div className="cap">
-          {profile.grade}학년 · {profile.semester} · {goal}
+          인공지능공학부 · {profile.semester} · {goal}
         </div>
       </div>
       <div className="p-stats">
@@ -39,6 +39,33 @@ export default function Profile({ persona, onChangeYear, onGoIntro }) {
       </div>
 
       <div className="p-menu">
+        <div className="p-group">동학 설정</div>
+        <div className="seg wide" role="radiogroup" aria-label="말투">
+          {Object.values(MODES).map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              role="radio"
+              aria-checked={mode === m.id}
+              className={mode === m.id ? 'on' : ''}
+              onClick={() => onChangeMode(m.id)}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
+        <div className="p-note" style={{ paddingTop: 8 }}>
+          {MODES[mode]?.desc}
+        </div>
+        <button type="button" className="p-row" onClick={onChangeYear}>
+          <span>학년 바꾸기</span>
+          <small>{profile.grade}학년</small>
+        </button>
+        <button type="button" className="p-row" onClick={onGoIntro}>
+          <span>처음 화면으로</span>
+          <Chevron />
+        </button>
+
         <div className="p-group">관심 · 목표</div>
         <div className="why">
           <div className="cap">동학이 답할 때 보는 것</div>
@@ -48,7 +75,7 @@ export default function Profile({ persona, onChangeYear, onGoIntro }) {
           <p>목표: {goal}</p>
         </div>
 
-        <div className="p-group">이수 과목</div>
+        <div className="p-group">이수 과목 {profile.completedCourses.length}</div>
         <div className="chips" style={{ padding: '4px 0 8px' }}>
           {profile.completedCourses.map((course) => (
             <span key={course} className="chip">
@@ -56,16 +83,6 @@ export default function Profile({ persona, onChangeYear, onGoIntro }) {
             </span>
           ))}
         </div>
-
-        <div className="p-group">계정</div>
-        <button type="button" className="p-row" onClick={onChangeYear}>
-          <span>학년 바꾸기</span>
-          <Chevron />
-        </button>
-        <button type="button" className="p-row" onClick={onGoIntro}>
-          <span>처음 화면으로</span>
-          <Chevron />
-        </button>
 
         <div className="p-group">안내</div>
         <div className="p-row">

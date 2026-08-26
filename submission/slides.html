@@ -71,7 +71,7 @@
   <h2>같은 질문인데, 학년마다 답이 달라야 한다</h2>
   <div class="cols">
     <div>
-      <p class="quote">"졸업사정 받고 나서야<br><em>공인영어성적</em>이 빠진 걸 알았다."</p>
+      <p class="quote">"졸업사정 받고 나서야<br><em>졸업인증 서류</em>가 빠진 걸 알았다."</p>
       <p class="lead">학사 정보는 학년·이수 이력에 따라 달라지는데, 공지·학사요람·조교 상담에 흩어져 있다. 저학년은 자기 상황에 맞는 답을 받기 어렵고, 고학년이 되어서야 구멍을 발견한다.</p>
     </div>
     <ul class="list" style="margin-top:8px">
@@ -101,9 +101,9 @@
 <section class="slide">
   <div class="eyebrow">데모 · 같은 질문 "이번 학기에 뭘 해야 할까?"</div>
   <div class="shots">
-    <figure><div class="phone"><img src="shots/chat1.png" alt=""></div><figcaption><b>1학년의 최성원</b>자료구조입문·이산수학 먼저. 자격증은 아직.</figcaption></figure>
+    <figure><div class="phone"><img src="shots/chat1.png" alt=""></div><figcaption><b>1학년의 최성원</b>자료구조입문·이산수학 먼저. 자격증은 아직 이르다고.</figcaption></figure>
     <figure><div class="phone"><img src="shots/chat3.png" alt=""></div><figcaption><b>3학년의 최성원</b>네이버클라우드 목표 → 클라우드컴퓨팅 + 예술 교양 2학점.</figcaption></figure>
-    <figure><div class="phone"><img src="shots/chat4.png" alt=""></div><figcaption><b>4학년의 최성원</b>수업보다 공인영어성적 제출이 먼저.</figcaption></figure>
+    <figure><div class="phone"><img src="shots/chat4.png" alt=""></div><figcaption><b>4학년의 최성원</b>수업보다 졸업작품 발표 신청·졸업인증 서류가 먼저.</figcaption></figure>
   </div>
   <div class="brand"><span class="mark">同</span>동학</div><div class="num">4 / 10</div>
 </section>
@@ -113,12 +113,12 @@
   <div class="eyebrow">데모 · 홈</div>
   <div class="cols" style="grid-template-columns:1fr 340px;align-items:center">
     <div>
-      <h2>열자마자 "이번 학기 먼저 닫을 것"</h2>
+      <h2>열자마자 "이번 학기 뭐부터"가 보인다</h2>
       <ul class="list">
-        <li>졸업 진행률 링<small>121 / 130학점, 빈칸 2개</small></li>
-        <li>지금 급한 것<small>학년마다 다른 두 장의 카드 — 누르면 바로 질문</small></li>
-        <li>장부에 남은 것<small>졸업사정 기준 미충족 요건</small></li>
-        <li>학년 바꾸기<small>같은 학생의 다른 시점으로 이동, 대화는 새로</small></li>
+        <li>졸업 진행률 링<small>121 / 130학점, 남은 요건 2개</small></li>
+        <li>다가오는 일정<small>학사일정 D-day — 개강, 정정, 장학금, 졸업작품 발표</small></li>
+        <li>이번 학기 체크<small>학년마다 다른 두 장의 카드 — 누르면 바로 질문</small></li>
+        <li>학과 공지<small>누르면 마감일이 캘린더 카드로</small></li>
       </ul>
     </div>
     <div class="phone"><img src="shots/home4.png" alt=""></div>
@@ -133,8 +133,8 @@
     <div>
       <h2>공지를 붙여 넣으면 마감일만 .ics로</h2>
       <div class="flow">
-        <div class="box">공지 붙여 넣기<small>교무처 토익 안내</small></div><div class="arrow">→</div>
-        <div class="box">접수 마감 추출<small>시험일 아님 · 9/1(화)</small></div><div class="arrow">→</div>
+        <div class="box">공지 붙여 넣기<small>학과 졸업작품 발표 안내</small></div><div class="arrow">→</div>
+        <div class="box">접수 마감 추출<small>발표일 아님 · 10/30(금)</small></div><div class="arrow">→</div>
         <div class="box">.ics 다운로드<small>하루 전 알림 포함</small></div>
       </div>
       <p class="lead">LLM이 날짜를 잘못 집어도 로컬 규칙이 접수 마감으로 교정한다. 폰에서 열면 캘린더에 바로 등록.</p>
@@ -168,7 +168,7 @@
   <div class="eyebrow">데모의 경계</div>
   <h2>진짜로 구현한 것과 연출한 것</h2>
   <div class="cols">
-    <div class="card"><div class="cap">진짜</div><ul class="list"><li>LLM 상담 — 실제 API 호출, 학년별로 다른 답</li><li>.ics 생성 — 폰·PC 캘린더에 실제 등록</li><li>공지 마감일 추출 — 규칙 + LLM 이중 확인</li></ul></div>
+    <div class="card"><div class="cap">진짜</div><ul class="list"><li>LLM 상담 — 실제 API 호출, 학년별로 다른 답</li><li>.ics 생성 — 폰·PC 캘린더에 실제 등록</li><li>공지 마감일 추출 — 규칙 + LLM 이중 확인</li><li>선배 / 메이트 두 가지 말투</li></ul></div>
     <div class="card soft"><div class="cap">연출</div><ul class="list"><li>학생 데이터 — 가상 학생 최성원 4개 시점</li><li>교육과정 — 학과 공개 정보를 참고한 샘플</li><li>로그인·학사시스템 연동 — 없음</li></ul></div>
   </div>
   <p class="lead" style="margin-top:30px">실서비스에는 본인 인증과 학사시스템(향림통) 연동이 필요하다. 답변은 참고용이며 최종 확인은 학과 사무실.</p>

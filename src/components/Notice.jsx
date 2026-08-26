@@ -1,18 +1,13 @@
-import { useState } from 'react'
+import { noticesFor } from '../data/notices.js'
 
-export const DEMO_NOTICE = `[교무처] 2026학년도 2학기 공인영어성적 제출 안내
-졸업예정자는 토익 성적표를 9월 25일(금)까지 제출해야 합니다.
-다음 토익 정기시험: 2026년 9월 12일(토) 오전 9시, 접수 마감 9월 1일(화)`
-
-export default function Notice({ onNotice }) {
-  const [text, setText] = useState('')
+export default function Notice({ persona, draft, setDraft, onNotice }) {
+  const samples = noticesFor(persona.profile.grade, 4)
 
   function submit(event) {
     event.preventDefault()
-    const body = text.trim()
+    const body = draft.trim()
     if (!body) return
-    onNotice(`${body}\n\n접수 마감일 저장해줘`)
-    setText('')
+    onNotice(`${body}\n\n마감일 저장해줘`)
   }
 
   return (
@@ -36,9 +31,9 @@ export default function Notice({ onNotice }) {
         </svg>
         <h3>공지 → 캘린더</h3>
         <p>
-          학과 공지를 그대로 붙여 넣으세요.
+          학과·교무처 공지를 그대로 붙여 넣으세요.
           <br />
-          접수 마감만 집어 .ics 파일로 드려요.
+          접수·신청 마감만 집어 .ics 파일로 드려요.
         </p>
       </div>
 
@@ -46,16 +41,16 @@ export default function Notice({ onNotice }) {
         <label htmlFor="notice">공지 본문</label>
         <textarea
           id="notice"
-          value={text}
-          onChange={(event) => setText(event.target.value)}
-          placeholder="[교무처] … 접수 마감 9월 1일(화)"
+          value={draft}
+          onChange={(event) => setDraft(event.target.value)}
+          placeholder="[인공지능공학부] … 접수 마감 10월 30일(금)"
         />
         <div className="row">
-          <button type="button" className="btn-outline" onClick={() => setText(DEMO_NOTICE)}>
-            예시 공지 넣기
+          <button type="button" className="btn-outline" onClick={() => setDraft('')} disabled={!draft}>
+            비우기
           </button>
-          <button type="submit" className="btn-primary" disabled={!text.trim()}>
-            마감일 넣기
+          <button type="submit" className="btn-primary" disabled={!draft.trim()}>
+            마감일 캘린더에 넣기
             <svg viewBox="0 0 24 24">
               <path d="M5 12h14m-7-7 7 7-7 7" />
             </svg>
@@ -63,28 +58,22 @@ export default function Notice({ onNotice }) {
         </div>
       </form>
 
-      <div className="steps">
-        <div className="step">
-          <div className="stat-dot">1</div>
-          <div>
-            <b>붙여 넣기</b>
-            <p>교무처·학과 공지를 통째로. 날짜가 여러 개여도 돼요.</p>
-          </div>
+      <div className="sec">
+        <div className="sec-head">
+          <div className="sec-title">최근 공지</div>
+          <span className="more">누르면 위에 채워져요</span>
         </div>
-        <div className="step">
-          <div className="stat-dot">2</div>
-          <div>
-            <b>동학이 접수 마감을 집어요</b>
-            <p>상담 탭에 일정 카드가 생겨요. 시험일이 아니라 접수 마감이 기준이에요.</p>
-          </div>
-        </div>
-        <div className="step">
-          <div className="stat-dot">3</div>
-          <div>
-            <b>캘린더에 넣기</b>
-            <p>.ics를 열면 폰·PC 캘린더에 바로 등록돼요. 하루 전 알림이 붙어 있어요.</p>
-          </div>
-        </div>
+        {samples.map((n) => (
+          <button key={n.id} type="button" className="feed-tease" onClick={() => setDraft(n.body)}>
+            <div className="ft-top">
+              <div className="avatar">{n.from.slice(0, 1)}</div>
+              <div>
+                <b>{n.from}</b> <span className="cap">· {n.posted.slice(5).replace('-', '/')}</span>
+              </div>
+            </div>
+            <p>{n.title}</p>
+          </button>
+        ))}
       </div>
     </div>
   )
