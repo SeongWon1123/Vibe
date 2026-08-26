@@ -82,7 +82,7 @@ export function openingNote(persona) {
 클라우드컴퓨팅이 아직이고, 예술 교양 2학점도 비어 있어.`
   }
   return `${name}, 학점 121이면 수업은 거의 끝났어.
-남은 건 공인영어성적이랑 졸업작품 최종발표. 영어가 먼저야. 공지는 옆에 붙여 넣으면 돼.`
+남은 건 공인영어성적이랑 졸업작품 최종발표. 영어가 먼저야. 공지는 공지 탭에 붙여 넣으면 돼.`
 }
 
 export function localAdvice(persona, question) {

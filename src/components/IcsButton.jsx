@@ -26,14 +26,19 @@ export default function IcsButton({ event }) {
   }
 
   return (
-    <div className="slip" style={{ marginTop: 8 }}>
+    <div className="slip">
+      <div className="cap">캘린더 일정</div>
       <b>{event.title}</b>
       <span>
         {event.date} {weekday} {time}
         {location ? ` · ${location}` : ''}
       </span>
-      <button type="button" className="dl" onClick={handleSave}>
-        캘린더에 넣기
+      <span>하루 전 알림 포함</span>
+      <button type="button" className="btn-start" onClick={handleSave}>
+        <svg viewBox="0 0 24 24">
+          <path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+        </svg>
+        캘린더에 넣기 (.ics)
       </button>
     </div>
   )

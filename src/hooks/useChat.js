@@ -1,0 +1,115 @@
+import { useRef, useState } from 'react'
+import { KNOWLEDGE } from '../data/knowledge.js'
+import { eventFromNotice, icsLine } from '../lib/notice.js'
+import { localAdvice, openingNote, studentName } from '../lib/urgency.js'
+import { parseIcsPayload } from '../lib/ics.js'
+
+export const QUICK = [
+  { send: '이번 학기에 뭘 해야 할까?', show: '이번 학기, 뭐가 급해' },
+  { send: '졸업까지 뭐가 남았어?', show: '졸업까지 뭐가 남음' },
+  { send: '들을 만한 교양 추천해줘', show: '교양 뭐가 비었어' },
+]
+
+export function buildSystemPrompt(persona) {
+  const { profile, label } = persona
+  return `당신은 '동학'입니다. 국립순천대학교에서 같은 학생의 4년을 옆에서 보는 선배입니다.
+아래 프로필은 다른 사람이 아닙니다. '${label}' 한 명이 ${profile.grade}학년이었을 때의 상태입니다.
+반말. 짧고 구체적으로. 지금 학기에 손댈 일만 말합니다.
+이모지, '도와드릴게요', '추가로 궁금한 점' 같은 챗봇 상투구는 쓰지 않습니다.
+
+[학생 프로필 — ${label}의 ${profile.grade}학년]
+${JSON.stringify(profile, null, 2)}
+
+[학사 지식베이스]
+${KNOWLEDGE}
+
+[응답 규칙]
+1. 학년·이수과목·목표를 근거로 답한다. 학생을 부를 때는 "${label}"만 쓴다.
+2. 졸업요건 질문: gradAudit이 null이면 체크리스트를 만들지 말고
+   아직 졸업사정 대상이 아니라고 한 뒤 이번 학기 기초만 안내한다.
+   missing이 있을 때만 그 항목을 체크리스트로 보여준다.
+3. 교양 추천은 관심분야와 비어 있는 영역을 교차해서 고른다.
+4. 공지를 붙여넣고 저장/캘린더를 말하면 마지막 줄에만:
+   [ICS]{"title":"행사명","date":"YYYY-MM-DD","time":"HH:MM","location":"장소"}[/ICS]
+5. 한국어, 300자 안팎, 마크다운 목록. 모르면 지어내지 말고 학과 사무실 확인이 필요해요.`
+}
+
+export function isPastedNotice(content) {
+  return content.includes('접수 마감일 저장해줘') || content.length > 220
+}
+
+function attachLocalEvent(reply, userText) {
+  const local = eventFromNotice(userText)
+  if (!local) return reply
+  const parsed = parseIcsPayload(reply)
+  if (parsed.event?.date === local.date) return reply
+  const body = parsed.text?.trim() || reply
+  return `${body}\n\n${icsLine(local)}`
+}
+
+function fallbackReply(persona, content) {
+  const event = eventFromNotice(content)
+  if (event) {
+    return `이 공지에서 접수 마감만 집었어.
+캘린더에 넣으면 하루 전에 알림이 가.
+
+${icsLine(event)}`
+  }
+  return (
+    localAdvice(persona, content) ||
+    `${studentName(persona)} 기준으로는 장부에 없는 내용이야. 학과 사무실 확인이 필요해.`
+  )
+}
+
+/** 페르소나 하나의 대화 상태. 페르소나가 바뀌면 호출 측에서 key로 리마운트한다. */
+export function useChat(persona) {
+  const [messages, setMessages] = useState(() => [
+    { role: 'assistant', content: openingNote(persona), greeting: true },
+  ])
+  const [loading, setLoading] = useState(false)
+  const loadingRef = useRef(false)
+  const messagesRef = useRef(messages)
+  messagesRef.current = messages
+
+  async function send(text) {
+    const content = String(text ?? '').trim()
+    if (!content || loadingRef.current) return false
+
+    const userMessage = { role: 'user', content }
+    const history = [...messagesRef.current.filter((item) => !item.greeting), userMessage]
+    setMessages((prev) => [...prev, userMessage])
+    loadingRef.current = true
+    setLoading(true)
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: history.map(({ role, content: body }) => ({ role, content: body })),
+          systemPrompt: buildSystemPrompt(persona),
+        }),
+      })
+      const data = await res.json().catch(() => ({}))
+      let reply = data.reply
+      if (data.ok && !reply) {
+        reply = fallbackReply(persona, content)
+      } else if (!reply) {
+        reply = data.error ? `연결이 안 됐어요. ${data.error}` : fallbackReply(persona, content)
+      }
+      reply = attachLocalEvent(reply, content)
+      setMessages((prev) => [...prev, { role: 'assistant', content: reply }])
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        { role: 'assistant', content: attachLocalEvent(fallbackReply(persona, content), content) },
+      ])
+    } finally {
+      loadingRef.current = false
+      setLoading(false)
+    }
+    return true
+  }
+
+  return { messages, loading, send }
+}

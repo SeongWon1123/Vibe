@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>길이음 v3 — 전체 화면</title>
+<style>
+  @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+  :root{
+    --ink:#1C1519; --sub:#6E6660; --faint:#A9A29B;
+    --line:#EFEAE4; --surface:#F8F5F1;
+    --dusk:#C25E3A; --dusk-deep:#A5482C; --dusk-soft:#F7E9E0;
+    --star:#E1972F;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:'Pretendard',-apple-system,sans-serif;color:var(--ink);
+    background:#DAD5CE;display:flex;justify-content:center;align-items:flex-start;
+    gap:30px;padding:40px 24px;min-height:100vh;flex-wrap:wrap;
+  }
+  .col{display:flex;flex-direction:column;align-items:center}
+  .tag{font-size:11px;font-weight:600;color:#8E877F;letter-spacing:.06em;margin-bottom:10px}
+  .phone{
+    width:390px;height:844px;background:#fff;border-radius:44px;overflow:hidden;
+    position:relative;flex-shrink:0;box-shadow:0 30px 70px rgba(30,20,15,.2);
+  }
+  .screen{position:absolute;inset:0;display:none;flex-direction:column;overflow-y:auto;
+    overflow-x:hidden;scrollbar-width:none;background:#fff;padding-bottom:106px}
+  .screen::-webkit-scrollbar{display:none}
+  .screen.on{display:flex}
+  .static{display:flex;padding-bottom:0}
+
+  .sbar{display:flex;justify-content:space-between;align-items:center;
+    padding:16px 30px 0;font-size:15px;font-weight:600;flex-shrink:0}
+  .sbar.float{position:absolute;top:0;left:0;right:0;z-index:20;color:#fff}
+  .sbar .ic{display:flex;gap:5px}
+  .sbar svg{width:16px;height:16px;fill:currentColor}
+  .pill{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
+    width:134px;height:5px;border-radius:3px;background:var(--ink);opacity:.85;z-index:60}
+  .pill.lite{background:#fff;opacity:.9}
+
+  /* ── 두루미 로고 ── */
+  .logo{display:flex;align-items:center;gap:9px}
+  .logo-mark{width:34px;height:34px;border-radius:10px;background:var(--dusk);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .logo-mark svg{width:22px;height:22px}
+  .logo b{font-size:16px;font-weight:700;letter-spacing:-.02em}
+  .logo .cap{font-size:11px;color:var(--faint)}
+
+  /* ═══ INTRO ═══ */
+  .intro{position:relative;height:100%;display:flex;flex-direction:column;color:#fff}
+  .intro svg.scene{position:absolute;inset:0;width:100%;height:100%}
+  .intro-top{position:relative;z-index:5;padding:64px 28px 0}
+  .intro-logo{display:flex;align-items:center;gap:9px;margin-bottom:34px}
+  .intro-logo .logo-mark{background:rgba(255,255,255,.16);backdrop-filter:blur(4px)}
+  .intro-logo b{font-size:17px;color:#fff}
+  .intro h1{font-size:31px;font-weight:700;line-height:1.34;letter-spacing:-.04em;
+    text-shadow:0 2px 18px rgba(35,18,10,.3)}
+  .intro .sub{font-size:14px;opacity:.82;margin-top:10px}
+  .intro-bottom{position:relative;z-index:5;margin-top:auto;padding:0 24px 30px}
+  .btn-ghost{width:100%;padding:15px;border-radius:13px;border:1px solid rgba(255,255,255,.45);
+    background:rgba(255,255,255,.1);backdrop-filter:blur(6px);color:#fff;
+    font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:10px}
+  .btn-solid{width:100%;padding:15px;border-radius:13px;border:none;background:#fff;
+    color:var(--ink);font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;letter-spacing:-.01em}
+  .intro .join{text-align:center;font-size:13px;opacity:.85;margin-top:14px}
+  .intro .join u{cursor:pointer;font-weight:600}
+  .intro .foot{text-align:center;font-size:10px;opacity:.5;margin-top:16px;letter-spacing:0}
+
+  /* ═══ LOGIN FORM ═══ */
+  .login{padding:0 26px}
+  .back{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:#fff;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;margin:14px 0 26px}
+  .back svg{width:17px;height:17px;stroke:var(--ink);fill:none;stroke-width:2}
+  .login h1{font-size:24px;font-weight:700;letter-spacing:-.035em;margin:22px 0 8px}
+  .login .desc{font-size:13px;color:var(--sub);line-height:1.55;margin-bottom:28px}
+  .field label{display:block;font-size:12px;font-weight:600;color:var(--sub);margin-bottom:7px}
+  .input{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;
+    padding:14px 15px;margin-bottom:16px;background:#fff}
+  .input:focus-within{border-color:var(--dusk)}
+  .input svg{width:17px;height:17px;stroke:#C6C0B9;fill:none;stroke-width:1.8;flex-shrink:0}
+  .input input{border:none;outline:none;font-family:inherit;font-size:15px;flex:1;color:var(--ink)}
+  .btn-primary{width:100%;padding:15px;border-radius:13px;border:none;background:var(--ink);
+    color:#fff;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;margin-top:8px;
+    display:flex;align-items:center;justify-content:center;gap:7px}
+  .btn-primary svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2}
+  .login .join{text-align:center;font-size:13px;color:var(--sub);margin:18px 0 22px}
+  .login .join u{color:var(--dusk);font-weight:600;cursor:pointer;text-decoration:none}
+  .btn-outline{width:100%;padding:14px;border-radius:13px;border:1px solid var(--line);
+    background:#fff;color:var(--ink);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:7px}
+  .btn-outline svg{width:15px;height:15px;stroke:var(--dusk);fill:none;stroke-width:2}
+  .login .note{font-size:11px;color:var(--faint);text-align:center;line-height:1.6;margin-top:20px}
+  .login .foot{text-align:center;font-size:10px;color:#C6C0B9;margin-top:14px}
+
+  /* ═══ HOME (짧아진 히어로) ═══ */
+  .hero{position:relative;height:300px;flex-shrink:0}
+  .hero svg.scene{position:absolute;inset:0;width:100%;height:100%}
+  .hero-content{position:absolute;left:0;right:0;bottom:0;padding:0 26px 22px;color:#fff;z-index:5}
+  .hero-eyebrow{font-size:12px;opacity:.82;margin-bottom:6px}
+  .hero-title{font-size:23px;font-weight:700;line-height:1.3;letter-spacing:-.035em;margin-bottom:14px;
+    text-shadow:0 1px 12px rgba(40,20,10,.25)}
+  .hero-cta{display:inline-flex;align-items:center;gap:6px;background:#fff;color:var(--ink);
+    border:none;cursor:pointer;font-family:inherit;font-size:13.5px;font-weight:600;
+    padding:11px 19px;border-radius:11px}
+  .hero-cta svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+  @keyframes sway{0%,100%{transform:rotate(-1.6deg)}50%{transform:rotate(1.6deg)}}
+  .reeds-l,.reeds-r{animation:sway 5.5s ease-in-out infinite;transform-origin:50% 100%}
+  .reeds-r{animation-delay:-2.7s}
+  @keyframes drift{to{transform:translateX(-24px)}}
+  .birds{animation:drift 13s linear infinite alternate}
+  @media(prefers-reduced-motion:reduce){.reeds-l,.reeds-r,.birds,.crane{animation:none!important}}
+
+  .sec{padding:24px 26px 0}
+  .sec-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
+  .sec-title{font-size:17px;font-weight:700;letter-spacing:-.03em}
+  .more{font-size:12px;font-weight:500;color:var(--faint);cursor:pointer}
+
+  .ongoing{margin:18px 26px 0;display:flex;align-items:center;gap:13px;
+    padding:15px 16px;background:var(--surface);border-radius:16px}
+  .ring{width:42px;height:42px;position:relative;flex-shrink:0;display:flex;
+    align-items:center;justify-content:center;font-size:11px;font-weight:700}
+  .ring svg{position:absolute;inset:0}
+  .ongoing b{display:block;font-size:14.5px;font-weight:600;letter-spacing:-.02em;margin-bottom:2px}
+  .ongoing .meta{font-size:12px;color:var(--sub)}
+  .ongoing .rate{font-size:11.5px;color:var(--faint);margin-top:2px}
+  .ongoing i{color:var(--star);font-style:normal}
+  .resume{margin-left:auto;font-size:13px;font-weight:600;color:var(--dusk);white-space:nowrap;cursor:pointer}
+
+  .spots{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+  .spot{cursor:pointer}
+  .spot .thumb{border-radius:14px;overflow:hidden;height:112px}
+  .spot .thumb svg{width:100%;height:100%;display:block}
+  .spot b{display:block;font-size:13.5px;font-weight:600;letter-spacing:-.02em;margin:8px 0 2px;padding:0 2px}
+  .spot .cap{font-size:11.5px;color:var(--faint);padding:0 2px}
+  .spot .cap i{color:var(--star);font-style:normal}
+
+  .stat-line{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .stat-dot{width:30px;height:30px;border-radius:9px;background:var(--dusk-soft);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .stat-dot svg{width:15px;height:15px;stroke:var(--dusk);fill:none;stroke-width:2}
+  .stat-line p{font-size:14px;color:var(--sub)}
+  .stat-line b{color:var(--ink);font-weight:700}
+  .record{border:1px solid var(--line);border-radius:14px;padding:13px 15px}
+  .record .cap{font-size:11.5px;color:var(--faint);margin-bottom:4px}
+  .record b{display:block;font-size:13.5px;font-weight:600;letter-spacing:-.02em;margin-bottom:8px}
+  .chips{display:flex;gap:6px}
+  .chip{font-size:11px;font-weight:500;color:#8B837B;background:var(--surface);padding:4px 10px;border-radius:7px}
+
+  .feed-tease{border:1px solid var(--line);border-radius:16px;padding:15px 16px;cursor:pointer}
+  .ft-top{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+  .avatar{width:30px;height:30px;border-radius:50%;background:var(--surface);display:flex;
+    align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--faint);flex-shrink:0}
+  .ft-top b{font-size:13px;font-weight:600}
+  .ft-top .cap{font-size:11px;color:var(--faint)}
+  .feed-tease p{font-size:13px;line-height:1.55;color:#39322E;letter-spacing:-.01em;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+  /* ═══ NAV ═══ */
+  .nav{position:absolute;bottom:0;left:0;right:0;z-index:50;background:rgba(255,255,255,.96);
+    backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;padding:9px 6px 22px}
+  .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:4px 0}
+  .nav-item svg{width:22px;height:22px;stroke:#C6C0B9;fill:none;stroke-width:1.8;transition:.15s}
+  .nav-item span{font-size:10px;font-weight:500;color:#C6C0B9;transition:.15s}
+  .nav-item.on svg{stroke:var(--ink)}
+  .nav-item.on span{color:var(--ink);font-weight:600}
+
+  /* ═══ 공통 페이지 헤더 ═══ */
+  .phead{padding:14px 26px 4px}
+  .phead h1{font-size:24px;font-weight:700;letter-spacing:-.035em;margin-bottom:4px}
+  .phead p{font-size:13.5px;color:var(--faint)}
+
+  /* ═══ COURSE TAB ═══ */
+  .ai-card{margin:18px 26px 2px;border-radius:18px;overflow:hidden;position:relative;padding:22px;color:#fff}
+  .ai-card svg.bg{position:absolute;inset:0;width:100%;height:100%}
+  .ai-card h3{position:relative;font-size:17px;font-weight:700;margin-bottom:5px;letter-spacing:-.02em}
+  .ai-card p{position:relative;font-size:13px;opacity:.85;line-height:1.5;margin-bottom:14px}
+  .ai-btn{position:relative;display:inline-flex;align-items:center;gap:6px;background:#fff;
+    color:var(--ink);border:none;cursor:pointer;font-family:inherit;font-size:13.5px;font-weight:600;
+    padding:10px 18px;border-radius:10px}
+  .course-row{padding:17px 0;border-bottom:1px solid var(--surface);cursor:pointer}
+  .course-row:last-child{border:none}
+  .course-row b{display:block;font-size:15.5px;font-weight:600;letter-spacing:-.02em;margin-bottom:3px}
+  .course-row p{font-size:13px;color:var(--sub);margin-bottom:7px}
+  .course-meta{display:flex;gap:13px;font-size:12px;color:var(--faint)}
+
+  /* ═══ FOOD TAB ═══ */
+  .filters{display:flex;gap:8px;padding:14px 26px 4px;overflow-x:auto;scrollbar-width:none}
+  .filters::-webkit-scrollbar{display:none}
+  .fchip{padding:8px 16px;border-radius:20px;font-size:13px;font-weight:500;white-space:nowrap;
+    border:1px solid var(--line);color:var(--sub);cursor:pointer}
+  .fchip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .r-item{display:flex;gap:13px;padding:15px 0;border-bottom:1px solid var(--surface);cursor:pointer}
+  .r-item:last-child{border:none}
+  .r-thumb{width:72px;height:72px;border-radius:14px;overflow:hidden;flex-shrink:0}
+  .r-thumb svg{width:100%;height:100%;display:block}
+  .r-item b{display:block;font-size:15px;font-weight:600;letter-spacing:-.02em;margin-bottom:2px}
+  .r-item .type{font-size:12px;color:var(--faint);margin-bottom:6px}
+  .row2{display:flex;gap:10px;font-size:12px}
+  .row2 .rt{font-weight:600}
+  .row2 i{color:var(--star);font-style:normal}
+  .row2 .ds{color:var(--faint)}
+
+  /* ═══ FEED TAB ═══ */
+  .f-item{padding:19px 0;border-bottom:1px solid var(--surface)}
+  .f-item:last-child{border:none}
+  .f-top{display:flex;align-items:center;gap:10px;margin-bottom:11px}
+  .f-top .avatar{width:36px;height:36px;font-size:14px}
+  .f-top b{display:block;font-size:14px;font-weight:600}
+  .f-top .cap{font-size:11px;color:var(--faint)}
+  .f-photo{border-radius:16px;overflow:hidden;height:200px;margin-bottom:12px}
+  .f-photo svg{width:100%;height:100%;display:block}
+  .f-text{font-size:14px;line-height:1.6;letter-spacing:-.01em;color:#39322E;margin-bottom:10px}
+  .f-course{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--dusk);cursor:pointer}
+  .f-course svg{width:13px;height:13px;stroke:var(--dusk);fill:none;stroke-width:2}
+  .f-react{display:flex;gap:16px;margin-top:11px}
+  .f-react div{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--faint);cursor:pointer}
+  .f-react svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.6}
+
+  /* ═══ PROFILE ═══ */
+  .p-head{padding:22px 26px;text-align:center}
+  .p-avatar{width:60px;height:60px;border-radius:50%;background:var(--surface);
+    margin:0 auto 11px;display:flex;align-items:center;justify-content:center}
+  .p-avatar svg{width:25px;height:25px;stroke:#C6C0B9;fill:none;stroke-width:1.6}
+  .p-head b{display:block;font-size:16px;font-weight:600}
+  .p-head .cap{font-size:12px;color:var(--faint)}
+  .p-stats{display:flex;justify-content:center;gap:38px;margin:0 26px;padding:17px 0;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .p-stat{text-align:center}
+  .p-stat b{font-size:19px;font-weight:700}
+  .p-stat .cap{font-size:11px;color:var(--faint);margin-top:2px}
+  .p-menu{padding:10px 26px 0}
+  .p-group{font-size:11px;font-weight:600;color:#C0BAB2;letter-spacing:.05em;padding:15px 0 5px}
+  .p-row{display:flex;justify-content:space-between;align-items:center;padding:12.5px 0;cursor:pointer}
+  .p-row span{font-size:14.5px;letter-spacing:-.01em}
+  .p-row svg{width:17px;height:17px;stroke:#D6D0C8;fill:none;stroke-width:2}
+  .p-row+.p-row{border-top:1px solid #FAF8F5}
+  .logout{margin-top:8px;padding:13px 0;font-size:14px;font-weight:500;color:var(--dusk);
+    border-top:1px solid var(--line);cursor:pointer}
+
+  /* ═══ WIZARD ═══ */
+  .wiz-top{display:flex;align-items:center;gap:14px;padding:14px 26px 0}
+  .wiz-track{flex:1;height:4px;border-radius:2px;background:var(--line);overflow:hidden}
+  .wiz-fill{width:20%;height:100%;background:var(--dusk);border-radius:2px}
+  .wiz-step{font-size:12px;font-weight:600;color:var(--faint)}
+  .wiz-brand{padding:18px 26px 0;font-size:12px;font-weight:600;color:var(--dusk)}
+  .wiz-toggle{display:flex;background:var(--surface);border-radius:13px;padding:4px;margin:14px 26px 0}
+  .wiz-toggle div{flex:1;text-align:center;padding:10px;border-radius:10px;
+    font-size:13.5px;font-weight:600;color:var(--faint);cursor:pointer}
+  .wiz-toggle div.on{background:#fff;color:var(--ink);box-shadow:0 1px 5px rgba(30,20,15,.08)}
+  .wiz-q{padding:26px 26px 0;font-size:22px;font-weight:700;letter-spacing:-.035em}
+  .wiz-opts{display:grid;grid-template-columns:1fr 1fr;gap:11px;padding:18px 26px 0}
+  .wopt{padding:17px 16px;border-radius:14px;border:1px solid var(--line);font-size:14.5px;
+    font-weight:600;letter-spacing:-.02em;cursor:pointer;display:flex;
+    justify-content:space-between;align-items:center;background:#fff}
+  .wopt.on{background:var(--dusk);border-color:var(--dusk);color:#fff}
+  .wopt svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.4}
+  .wiz-note{padding:22px 32px 0;font-size:11px;color:var(--faint);line-height:1.6;text-align:center}
+  .wiz-note u{cursor:pointer}
+
+  /* ═══ 코스 결과 (지도) ═══ */
+  .map-wrap{position:relative;height:100%;overflow:hidden;display:flex;flex-direction:column}
+  .map-bg{position:absolute;inset:0}
+  .map-bg svg{width:100%;height:100%;display:block}
+  .map-top{position:relative;z-index:10;display:flex;align-items:center;gap:12px;padding:14px 20px 0}
+  .map-btn{width:38px;height:38px;border-radius:50%;background:#fff;border:none;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(30,20,15,.12);flex-shrink:0}
+  .map-btn svg{width:17px;height:17px;stroke:var(--ink);fill:none;stroke-width:2}
+  .map-title{background:#fff;border-radius:12px;padding:10px 16px;font-size:14px;font-weight:600;
+    letter-spacing:-.02em;box-shadow:0 2px 10px rgba(30,20,15,.12);flex:1}
+  .sheet{position:relative;z-index:10;margin-top:auto;background:#fff;
+    border-radius:24px 24px 0 0;box-shadow:0 -8px 30px rgba(30,20,15,.14);padding:10px 24px 26px}
+  .grab{width:38px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 14px}
+  .sheet h2{font-size:17px;font-weight:700;letter-spacing:-.03em;margin-bottom:6px}
+  .sheet .desc{font-size:13px;color:var(--sub);line-height:1.55;margin-bottom:14px}
+  .stat3{display:flex;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:13px}
+  .stat3 div{flex:1;text-align:center;padding:12px 4px}
+  .stat3 div+div{border-left:1px solid var(--line)}
+  .stat3 b{display:block;font-size:15.5px;font-weight:700;letter-spacing:-.02em}
+  .stat3 .cap{font-size:10.5px;color:var(--faint);margin-top:2px}
+  .why{background:var(--surface);border-radius:13px;padding:13px 15px;margin-bottom:10px}
+  .why .cap{font-size:11.5px;font-weight:700;color:var(--dusk);margin-bottom:7px}
+  .why p{font-size:12.5px;color:#4A433E;line-height:1.55;padding-left:11px;position:relative}
+  .why p+p{margin-top:5px}
+  .why p::before{content:'';position:absolute;left:0;top:8px;width:4px;height:4px;border-radius:50%;background:var(--dusk)}
+  .warn{display:flex;gap:8px;align-items:flex-start;font-size:12px;color:#8A5B2B;
+    background:#FBF3E4;border-radius:11px;padding:11px 13px;margin-bottom:14px;line-height:1.5}
+  .warn svg{width:14px;height:14px;stroke:#C08A3E;fill:none;stroke-width:2;flex-shrink:0;margin-top:1px}
+  .btn-start{width:100%;padding:15px;border-radius:13px;border:none;background:var(--dusk);
+    color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:7px;letter-spacing:-.01em}
+  .btn-start svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2.2}
+
+  /* ═══ LOADING ═══ */
+  .load-wrap{position:absolute;inset:0;background:#FBF9F6;display:flex;flex-direction:column}
+  .load-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 40px}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+  .crane{width:74px;height:74px;margin-bottom:30px;animation:bob 3.2s ease-in-out infinite}
+  .load-msg{font-size:17px;font-weight:600;letter-spacing:-.02em;text-align:center;
+    min-height:52px;display:flex;align-items:center;transition:opacity .3s}
+  .load-bar{width:110px;height:3px;background:#EAE5DE;border-radius:2px;overflow:hidden;margin-top:18px}
+  .load-fill{width:38px;height:100%;background:var(--dusk);border-radius:2px;animation:slide 1.6s ease-in-out infinite}
+  @keyframes slide{0%{transform:translateX(-40px)}100%{transform:translateX(112px)}}
+</style>
+</head>
+<body>
+
+<!-- ════════ 01 로그인 인트로 ════════ -->
+<div class="col"><div class="tag">01 · 로그인 인트로</div>
+<div class="phone">
+  <div class="screen static on">
+    <div class="intro">
+      <svg class="scene" viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="isky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#221A2E"/><stop offset=".32" stop-color="#4E3342"/>
+            <stop offset=".55" stop-color="#9A4B38"/><stop offset=".68" stop-color="#D5814F"/>
+            <stop offset=".76" stop-color="#EFAF7E"/>
+          </linearGradient>
+          <linearGradient id="iwater" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#E29963"/><stop offset=".4" stop-color="#9E5138"/>
+            <stop offset="1" stop-color="#2B1C28"/>
+          </linearGradient>
+          <radialGradient id="iglow" cx=".5" cy=".5" r=".5">
+            <stop offset="0" stop-color="#FFE7BC" stop-opacity=".85"/>
+            <stop offset="1" stop-color="#FFDCA0" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <rect width="390" height="590" fill="url(#isky)"/>
+        <circle cx="255" cy="500" r="100" fill="url(#iglow)"/>
+        <circle cx="255" cy="505" r="17" fill="#FFEBC8"/>
+        <g class="birds" stroke="#2A1E2C" stroke-width="1.8" fill="none" stroke-linecap="round">
+          <path d="M92 210 q7 -8 14 0 q7 -8 14 0"/>
+          <path d="M140 188 q6 -7 12 0 q6 -7 12 0"/>
+          <path d="M116 236 q5 -6 10 0 q5 -6 10 0"/>
+        </g>
+        <path d="M0 585 Q60 562 130 580 T265 576 T390 574 L390 595 L0 595 Z" fill="#2A1D2A"/>
+        <rect y="590" width="390" height="254" fill="url(#iwater)"/>
+        <path d="M390 600 C300 610 240 602 202 620 C164 638 208 656 152 678 C108 696 40 704 0 730 L0 760 L80 742 C140 722 172 712 202 694 C246 668 202 652 248 632 C288 616 334 614 390 606 Z"
+              fill="#F0B279" opacity=".9"/>
+        <ellipse cx="80" cy="632" rx="46" ry="11" fill="#231622"/>
+        <ellipse cx="318" cy="660" rx="52" ry="12" fill="#231622"/>
+        <g class="reeds-l" stroke="#150E17" stroke-width="2.2" fill="#150E17" stroke-linecap="round">
+          <path d="M24 844 C27 780 20 750 30 716" fill="none"/><ellipse cx="31" cy="710" rx="3.4" ry="11" transform="rotate(10 31 710)"/>
+          <path d="M46 844 C46 792 53 764 47 736" fill="none"/><ellipse cx="47" cy="730" rx="3" ry="10" transform="rotate(-7 47 730)"/>
+          <path d="M64 844 C68 798 62 774 72 744" fill="none"/><ellipse cx="73" cy="738" rx="3" ry="9.5" transform="rotate(12 73 738)"/>
+        </g>
+        <g class="reeds-r" stroke="#150E17" stroke-width="2.2" fill="#150E17" stroke-linecap="round">
+          <path d="M352 844 C355 788 348 760 359 726" fill="none"/><ellipse cx="360" cy="720" rx="3.4" ry="11" transform="rotate(11 360 720)"/>
+          <path d="M374 844 C374 796 381 770 375 744" fill="none"/><ellipse cx="375" cy="738" rx="3" ry="9.5" transform="rotate(-7 375 738)"/>
+        </g>
+        <rect y="560" width="390" height="284" fill="url(#ifade)"/>
+        <linearGradient id="ifade" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#150E17" stop-opacity="0"/>
+          <stop offset="1" stop-color="#150E17" stop-opacity=".55"/>
+        </linearGradient>
+      </svg>
+      <div class="sbar float"><span>9:41</span>
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M2 9c5.5-5.5 14.5-5.5 20 0l-2 2c-4.4-4.4-11.6-4.4-16 0zm4 4c3.3-3.3 8.7-3.3 12 0l-2 2c-2.2-2.2-5.8-2.2-8 0zm4 4l2 2 2-2c-1.1-1.1-2.9-1.1-4 0z"/></svg>
+        <svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="1.5"/></svg></div></div>
+      <div class="intro-top">
+        <div class="intro-logo">
+          <div class="logo-mark">
+            <svg viewBox="0 0 74 74" fill="none" stroke="#fff" stroke-width="4.5" stroke-linejoin="round" stroke-linecap="round">
+              <path d="M14 44 C24 30 40 28 50 32 C58 35 62 42 60 48 C57 56 44 58 34 54 C26 51 18 49 14 44Z"/>
+              <path d="M50 32 C54 24 62 20 68 21 C64 26 60 30 58 35"/>
+            </svg>
+          </div>
+          <b>길이음</b>
+        </div>
+        <h1>순천 하루,<br>대신 짜 드릴게요</h1>
+        <div class="sub">동행자 체력과 이동 수단까지 계산해요.</div>
+      </div>
+      <div class="intro-bottom">
+        <button class="btn-ghost">로그인</button>
+        <button class="btn-solid">지금 여기서 시작하기</button>
+        <div class="join">계정이 없어요 · <u>회원가입</u></div>
+        <div class="foot">개인정보처리방침 이용약관·위치기반서비스 &nbsp; 문의 &nbsp; 신고</div>
+      </div>
+    </div>
+  </div>
+  <div class="pill lite"></div>
+</div></div>
+
+<!-- ════════ 02 로그인 폼 ════════ -->
+<div class="col"><div class="tag">02 · 로그인 폼</div>
+<div class="phone">
+  <div class="screen static on">
+    <div class="sbar"><span>9:41</span>
+      <div class="ic"><svg viewBox="0 0 24 24"><path d="M2 9c5.5-5.5 14.5-5.5 20 0l-2 2c-4.4-4.4-11.6-4.4-16 0zm4 4c3.3-3.3 8.7-3.3 12 0l-2 2c-2.2-2.2-5.8-2.2-8 0zm4 4l2 2 2-2c-1.1-1.1-2.9-1.1-4 0z"/></svg>
+      <svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="1.5"/></svg></div></div>
+    <div class="login">
+      <div class="back"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+      <div class="logo">
+        <div class="logo-mark">
+          <svg viewBox="0 0 74 74" fill="none" stroke="#fff" stroke-width="4.5" stroke-linejoin="round" stroke-linecap="round">
+            <path d="M14 44 C24 30 40 28 50 32 C58 35 62 42 60 48 C57 56 44 58 34 54 C26 51 18 49 14 44Z"/>
+            <path d="M50 32 C54 24 62 20 68 21 C64 26 60 30 58 35"/>
+          </svg>
+        </div>
+        <div><b>길이음</b><div class="cap">순천 맞춤 여행 코스</div></div>
+      </div>
+      <h1>나에게 맞는 여행을 시작해요</h1>
+      <div class="desc">고령층, 영유아, 동행 관계까지 반영해 무리 없는 동선을 추천합니다.</div>
+      <div class="field"><label>이메일</label>
+        <div class="input">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
+          <input value="test@ongil.com" readonly>
+        </div>
+      </div>
+      <div class="field"><label>비밀번호</label>
+        <div class="input">
+          <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <input type="password" value="********" readonly>
+        </div>
+      </div>
+      <button class="btn-primary">로그인
+        <svg viewBox="0 0 24 24"><path d="M5 12h14m-7-7 7 7-7 7"/></svg></button>
+      <div class="join">계정이 없으신가요? <u>회원가입</u></div>
+      <button class="btn-outline">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v8m-4-4h8"/></svg>
+        회원가입 없이 코스 먼저 보기</button>
+      <div class="note">앱 사용 중 위치 기반 추천과 피드백 데이터가<br>서비스 개선에 활용될 수 있습니다.</div>
+      <div class="foot">개인정보처리방침 이용약관·위치기반서비스 &nbsp; 문의 &nbsp; 신고</div>
+    </div>
+  </div>
+  <div class="pill"></div>
+</div></div>
+
+<!-- ════════ 03 메인 앱 (5탭 인터랙티브) ════════ -->
+<div class="col"><div class="tag">03 · 메인 앱 — 탭 눌러서 전환</div>
+<div class="phone" id="app">
+
+  <!-- HOME -->
+  <div class="screen on" id="s-home">
+    <div class="sbar float"><span>9:41</span>
+      <div class="ic"><svg viewBox="0 0 24 24"><path d="M2 9c5.5-5.5 14.5-5.5 20 0l-2 2c-4.4-4.4-11.6-4.4-16 0zm4 4c3.3-3.3 8.7-3.3 12 0l-2 2c-2.2-2.2-5.8-2.2-8 0zm4 4l2 2 2-2c-1.1-1.1-2.9-1.1-4 0z"/></svg>
+      <svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="1.5"/></svg></div></div>
+
+    <div class="hero">
+      <svg class="scene" viewBox="0 0 390 310" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="hsky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#2A1F33"/><stop offset=".34" stop-color="#5B3A46"/>
+            <stop offset=".58" stop-color="#A6503A"/><stop offset=".72" stop-color="#DA855A"/>
+            <stop offset=".82" stop-color="#F0B183"/>
+          </linearGradient>
+          <linearGradient id="hwater" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#E39B66"/><stop offset=".4" stop-color="#A5563C"/>
+            <stop offset="1" stop-color="#33222E"/>
+          </linearGradient>
+          <radialGradient id="hglow" cx=".5" cy=".5" r=".5">
+            <stop offset="0" stop-color="#FFE7BC" stop-opacity=".85"/>
+            <stop offset="1" stop-color="#FFDCA0" stop-opacity="0"/>
+          </radialGradient>
+          <linearGradient id="hfade" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#1B1220" stop-opacity="0"/>
+            <stop offset="1" stop-color="#1B1220" stop-opacity=".6"/>
+          </linearGradient>
+        </defs>
+        <rect width="390" height="213" fill="url(#hsky)"/>
+        <circle cx="266" cy="178" r="66" fill="url(#hglow)"/>
+        <circle cx="266" cy="181" r="13" fill="#FFEBC8"/>
+        <g class="birds" stroke="#2A1E2C" stroke-width="1.7" fill="none" stroke-linecap="round">
+          <path d="M92 62 q7 -8 14 0 q7 -8 14 0"/>
+          <path d="M134 46 q6 -7 12 0 q6 -7 12 0"/>
+          <path d="M114 84 q5 -6 10 0 q5 -6 10 0"/>
+        </g>
+        <path d="M0 209 Q55 190 125 206 T260 202 T390 200 L390 216 L0 216 Z" fill="#2B1E2B"/>
+        <rect y="213" width="390" height="97" fill="url(#hwater)"/>
+        <path d="M390 220 C305 226 244 220 206 233 C168 246 208 258 156 272 C114 284 42 288 0 306 L0 310 L74 310 C132 296 168 289 198 278 C240 262 198 250 242 237 C282 226 332 228 390 224 Z"
+              fill="#F2B57C" opacity=".9"/>
+        <ellipse cx="84" cy="242" rx="42" ry="9" fill="#251824"/>
+        <ellipse cx="315" cy="258" rx="46" ry="10" fill="#251824"/>
+        <g class="reeds-l" stroke="#171019" stroke-width="2" fill="#171019" stroke-linecap="round">
+          <path d="M22 310 C25 278 19 262 28 244" fill="none"/><ellipse cx="29" cy="239" rx="3" ry="9" transform="rotate(10 29 239)"/>
+          <path d="M40 310 C40 282 46 268 41 254" fill="none"/><ellipse cx="41" cy="249" rx="2.8" ry="8" transform="rotate(-6 41 249)"/>
+          <path d="M57 310 C60 286 55 274 63 260" fill="none"/><ellipse cx="64" cy="255" rx="2.8" ry="8" transform="rotate(12 64 255)"/>
+        </g>
+        <g class="reeds-r" stroke="#171019" stroke-width="2" fill="#171019" stroke-linecap="round">
+          <path d="M356 310 C359 282 353 268 362 252" fill="none"/><ellipse cx="363" cy="247" rx="3" ry="9" transform="rotate(11 363 247)"/>
+          <path d="M374 310 C374 288 380 275 375 262" fill="none"/><ellipse cx="375" cy="257" rx="2.7" ry="7.5" transform="rotate(-7 375 257)"/>
+        </g>
+        <rect y="190" width="390" height="120" fill="url(#hfade)"/>
+      </svg>
+      <div class="hero-content">
+        <div class="hero-eyebrow">8월의 순천 · 맑음 29°</div>
+        <div class="hero-title">오늘의 순천,<br>어디부터 걸어볼까요</div>
+        <button class="hero-cta">코스 추천받기
+          <svg viewBox="0 0 24 24"><path d="M5 12h14m-7-7 7 7-7 7"/></svg></button>
+      </div>
+    </div>
+
+    <div class="ongoing">
+      <div class="ring">
+        <svg viewBox="0 0 42 42">
+          <circle cx="21" cy="21" r="18" fill="none" stroke="#ECE7E1" stroke-width="3.5"/>
+          <circle cx="21" cy="21" r="18" fill="none" stroke="var(--dusk)" stroke-width="3.5"
+            stroke-dasharray="113" stroke-dashoffset="56.5" stroke-linecap="round" transform="rotate(-90 21 21)"/>
+        </svg>2/4
+      </div>
+      <div>
+        <b>순천만 하루 코스</b>
+        <div class="meta">다음 · 노리미물생물까지 22분</div>
+        <div class="rate"><i>★</i> 4.6 · 리뷰 1,204</div>
+      </div>
+      <div class="resume">이어가기</div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">지금 많이 담는 장소</div><div class="more">전체 보기</div></div>
+      <div class="spots">
+        <div class="spot">
+          <div class="thumb"><svg viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">
+            <defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#DCE7D4"/><stop offset="1" stop-color="#F2EFE3"/></linearGradient></defs>
+            <rect width="200" height="150" fill="url(#g1)"/>
+            <ellipse cx="100" cy="152" rx="130" ry="62" fill="#7E9A6B"/>
+            <ellipse cx="100" cy="150" rx="96" ry="48" fill="#8FAC7A"/>
+            <path d="M28 138 Q100 96 172 136 M46 124 Q100 92 156 122 M64 112 Q100 90 138 110"
+                  stroke="#6E8A5D" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <circle cx="100" cy="88" r="5" fill="#5C7A4C"/>
+            <circle cx="36" cy="56" r="7" fill="#A9C193" opacity=".7"/>
+          </svg></div>
+          <b>순천만국가정원</b><div class="cap"><i>★</i> 4.5 · 도보 15분</div>
+        </div>
+        <div class="spot">
+          <div class="thumb"><svg viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">
+            <defs><linearGradient id="g2" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#F4E0BD"/><stop offset="1" stop-color="#DFB988"/></linearGradient></defs>
+            <rect width="200" height="150" fill="url(#g2)"/>
+            <circle cx="152" cy="42" r="14" fill="#F8EED2"/>
+            <g stroke="#8A6437" stroke-width="2" fill="#8A6437" stroke-linecap="round">
+              <path d="M30 150 C33 112 27 94 36 74" fill="none"/><ellipse cx="37" cy="69" rx="2.8" ry="9" transform="rotate(10 37 69)"/>
+              <path d="M60 150 C60 118 66 100 61 84" fill="none"/><ellipse cx="61" cy="79" rx="2.6" ry="8" transform="rotate(-7 61 79)"/>
+              <path d="M90 150 C93 120 88 104 96 88" fill="none"/><ellipse cx="97" cy="83" rx="2.6" ry="8" transform="rotate(12 97 83)"/>
+              <path d="M124 150 C124 124 129 110 125 96" fill="none"/><ellipse cx="125" cy="91" rx="2.4" ry="7" transform="rotate(-6 125 91)"/>
+              <path d="M156 150 C159 126 154 114 161 100" fill="none"/><ellipse cx="162" cy="95" rx="2.4" ry="7" transform="rotate(10 162 95)"/>
+            </g>
+          </svg></div>
+          <b>순천만습지</b><div class="cap"><i>★</i> 4.7 · 버스 30분</div>
+        </div>
+        <div class="spot">
+          <div class="thumb"><svg viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">
+            <defs><linearGradient id="g3" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#EAE3D6"/><stop offset="1" stop-color="#F5F1E7"/></linearGradient></defs>
+            <rect width="200" height="150" fill="url(#g3)"/>
+            <path d="M20 150 L20 96 Q22 84 34 80 L100 58 L166 80 Q178 84 180 96 L180 150 Z" fill="#EFE8DA"/>
+            <path d="M12 100 Q100 40 188 100 L178 100 Q100 52 22 100 Z" fill="#7A6A55"/>
+            <path d="M30 150 L30 108 L74 108 L74 150 M126 150 L126 108 L170 108 L170 150" stroke="#B8A98E" stroke-width="3" fill="none"/>
+            <rect x="88" y="102" width="24" height="48" rx="2" fill="#8A7A61"/>
+            <path d="M4 112 Q100 62 196 112" stroke="#6B5C48" stroke-width="4" fill="none"/>
+          </svg></div>
+          <b>낙안읍성</b><div class="cap"><i>★</i> 4.4 · 버스 40분</div>
+        </div>
+        <div class="spot">
+          <div class="thumb"><svg viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">
+            <defs><linearGradient id="g4" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#E8DCCB"/><stop offset="1" stop-color="#D9C9B2"/></linearGradient></defs>
+            <rect width="200" height="150" fill="url(#g4)"/>
+            <rect x="18" y="70" width="52" height="80" fill="#C4AD8C"/>
+            <rect x="26" y="82" width="14" height="16" fill="#8A7358"/><rect x="48" y="82" width="14" height="16" fill="#8A7358"/>
+            <rect x="26" y="110" width="14" height="16" fill="#8A7358"/><rect x="48" y="110" width="14" height="16" fill="#8A7358"/>
+            <rect x="82" y="88" width="46" height="62" fill="#B29B79"/>
+            <rect x="90" y="98" width="12" height="14" fill="#7E6A50"/><rect x="108" y="98" width="12" height="14" fill="#7E6A50"/>
+            <rect x="140" y="78" width="44" height="72" fill="#C9B291"/>
+            <rect x="148" y="90" width="11" height="13" fill="#8A7358"/><rect x="165" y="90" width="11" height="13" fill="#8A7358"/>
+            <path d="M14 66 h60 M78 84 h54 M136 74 h52" stroke="#6E5C44" stroke-width="5"/>
+            <path d="M0 150 h200" stroke="#A89170" stroke-width="8"/>
+          </svg></div>
+          <b>드라마촬영장</b><div class="cap"><i>★</i> 4.2 · 버스 18분</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">이번 주 순천</div></div>
+      <div class="stat-line">
+        <div class="stat-dot"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <p>이 코스로 걸은 사람 <b>37명</b></p>
+      </div>
+      <div class="record">
+        <div class="cap">어제 완주 기록</div>
+        <b>순천역 출발 6곳 코스 완주 · 10시간 12분</b>
+        <div class="chips"><span class="chip">대중교통 중심</span><span class="chip">혼합 테마</span></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">피드 새 글</div><div class="more" data-go="s-feed">더 보기</div></div>
+      <div class="feed-tease" data-go="s-feed">
+        <div class="ft-top"><div class="avatar">J</div>
+          <div><b>여행자_J</b> <span class="cap">· 3시간 전</span></div></div>
+        <p>순천만 갈대밭이 이 시기에 이렇게 예쁜지 몰랐어요. 오후 4시쯤 가면 빛이 진짜 좋아요. 국가정원 동문 입구가 덜 붐빕니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- COURSE -->
+  <div class="screen" id="s-course">
+    <div class="sbar"><span>9:41</span>
+      <div class="ic"><svg viewBox="0 0 24 24"><path d="M2 9c5.5-5.5 14.5-5.5 20 0l-2 2c-4.4-4.4-11.6-4.4-16 0zm4 4c3.3-3.3 8.7-3.3 12 0l-2 2c-2.2-2.2-5.8-2.2-8 0zm4 4l2 2 2-2c-1.1-1.1-2.9-1.1-4 0z"/></svg>
+      <svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="1.5"/></svg></div></div>
+    <div class="phead"><h1>코스</h1><p>나만의 순천 하루를 만들어보세요</p></div>
+    <div class="ai-card">
+      <svg class="bg" viewBox="0 0 340 140" preserveAspectRatio="xMidYMid slice">
+        <defs><linearGradient id="ac" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#2A1E2C"/><stop offset=".7" stop-color="#71392E"/><stop offset="1" stop-color="#A5563C"/></linearGradient></defs>
+        <rect width="340" height="140" fill="url(#ac)"/>
+        <path d="M340 90 C270 98 230 90 196 104 C164 118 200 128 158 140 L340 140 Z" fill="#DE9663" opacity=".35"/>
+        <g stroke="#F0C9A4" stroke-width="1.5" fill="none" stroke-linecap="round" opacity=".7">
+          <path d="M262 30 q6 -7 12 0 q6 -7 12 0"/><path d="M296 48 q5 -6 10 0 q5 -6 10 0"/></g>
+      </svg>
+      <h3>AI 맞춤 코스</h3>
+      <p>출발지·동행·관심사를 알려주시면<br>무리 없는 하루 동선을 짜드려요</p>
+      <button class="ai-btn">시작하기
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-7-7 7 7-7 7"/></svg></button>
+    </div>
+    <div class="sec">
+      <div class="sec-head"><div class="sec-title">인기 코스</div></div>
+      <div class="course-row"><b>순천만 하루 코스</b><p>순천만습지 → 국가정원 → 원도심</p>
+        <div class="course-meta"><span>약 8시간</span><span>6곳</span><span>37명 완주</span></div></div>
+      <div class="course-row"><b>원도심 골목 산책</b><p>문화의거리 → 매곡동 벽화마을 → 팔마체육공원</p>
+        <div class="course-meta"><span>약 4시간</span><span>4곳</span><span>12명 완주</span></div></div>
+      <div class="course-row"><b>낙안읍성 역사 탐방</b><p>낙안읍성 → 뿌리깊은나무박물관 → 주변 먹거리</p>
+        <div class="course-meta"><span>약 5시간</span><span>5곳</span><span>8명 완주</span></div></div>
+    </div>
+  </div>
+
+  <!-- FOOD -->
+  <div class="screen" id="s-food">
+    <div class="sbar"><span>9:41</span>
+      <div class="ic"><svg viewBox="0 0 24 24"><path d="M2 9c5.5-5.5 14.5-5.5 20 0l-2 2c-4.4-4.4-11.6-4.4-16 0zm4 4c3.3-3.3 8.7-3.3 12 0l-2 2c-2.2-2.2-5.8-2.2-8 0zm4 4l2 2 2-2c-1.1-1.1-2.9-1.1-4 0z"/></svg>
+      <svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="1.5"/></svg></div></div>
+    <div class="phead"><h1>맛집</h1><p>현재 코스 주변 맛집을 찾아드려요</p></div>
+    <div class="filters">
+      <div class="fchip on">전체</div><div class="fchip">한식</div><div class="fchip">카페</div>
+      <div class="fchip">해산물</div><div class="fchip">분식</div></div>
+    <div class="sec" style="padding-top:4px">
+      <div class="r-item">
+        <div class="r-thumb"><svg viewBox="0 0 80 80"><rect width="80" height="80" fill="#F3E8DC"/>
+          <path d="M20 42 h40 c0 12 -9 20 -20 20 s-20 -8 -20 -20" fill="#fff" stroke="#B98A5E" stroke-width="2.5"/>
+          <path d="M30 34 c0 -5 4 -5 4 -9 M40 34 c0 -5 4 -5 4 -9 M50 34 c0 -5 4 -5 4 -9" stroke="#B98A5E" stroke-width="2" fill="none" stroke-linecap="round"/></svg></div>
+        <div><b>순천만짬뽕</b><div class="type">중식 · 짬뽕 전문</div>
+          <div class="row2"><span class="rt"><i>★</i> 4.6</span><span class="ds">현재 위치에서 800m</span></div></div>
+      </div>
+      <div class="r-item">
+        <div class="r-thumb"><svg viewBox="0 0 80 80"><rect width="80" height="80" fill="#EAE4D8"/>
+          <path d="M26 34 h24 v14 a10 10 0 0 1 -10 10 h-4 a10 10 0 0 1 -10 -10 z" fill="#fff" stroke="#9B8B6E" stroke-width="2.5"/>
+          <path d="M50 38 h5 a5 5 0 0 1 0 10 h-5" fill="none" stroke="#9B8B6E" stroke-width="2.5"/>
+          <path d="M34 28 c0 -4 3 -4 3 -7 M42 28 c0 -4 3 -4 3 -7" stroke="#9B8B6E" stroke-width="2" fill="none" stroke-linecap="round"/></svg></div>
+        <div><b>교동다원</b><div class="type">카페 · 전통차</div>
+          <div class="row2"><span class="rt"><i>★</i> 4.8</span><span class="ds">현재 위치에서 1.2km</span></div></div>
+      </div>
+      <div class="r-item">
+        <div class="r-thumb"><svg viewBox="0 0 80 80"><rect width="80" height="80" fill="#F0EADD"/>
+          <ellipse cx="40" cy="46" rx="21" ry="12" fill="#fff" stroke="#A89468" stroke-width="2.5"/>
+          <ellipse cx="40" cy="41" rx="14" ry="5" fill="#E8DFC8"/>
+          <path d="M56 30 l8 -8 M58 38 l10 -4" stroke="#A89468" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <div><b>청량산가든</b><div class="type">한식 · 백반정식</div>
+          <div class="row2"><span class="rt"><i>★</i> 4.3</span><span class="ds">현재 위치에서 2.1km</span></div></div>
+      </div>
+      <div class="r-item">
+        <div class="r-thumb"><svg viewBox="0 0 80 80"><rect width="80" height="80" fill="#E4E8E3"/>
+          <path d="M18 42 q14 -13 30 0 q-3 4 -8 6 l6 6 -8 -2 q-11 4 -20 -10" fill="#fff" stroke="#7E9086" stroke-width="2.5" stroke-linejoin="round"/>
+          <circle cx="30" cy="40" r="1.8" fill="#7E9086"/></svg></div>
+        <div><b>별량횟집</b><div class="type">해산물 · 회정식</div>
+          <div class="row2"><span class="rt"><i>★</i> 4.5</span><span class="ds">현재 위치에서 3.4km</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEED -->
+  <div class="screen" id="s-feed">
+    <div class="sbar"><span>9:41</span>
+      <div class="ic"><svg viewBox="0 0 24 24"><path d="M2 9c5.5-5.5 14.5-5.5 20 0l-2 2c-4.4-4.4-11.6-4.4-16 0zm4 4c3.3-3.3 8.7-3.3 12 0l-2 2c-2.2-2.2-5.8-2.2-8 0zm4 4l2 2 2-2c-1.1-1.1-2.9-1.1-4 0z"/></svg>
+      <svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="1.5"/></svg></div></div>
+    <div class="phead"><h1>피드</h1><p>순천을 걸은 사람들의 이야기</p></div>
+    <div class="sec" style="padding-top:6px">
+      <div class="f-item">
+        <div class="f-top"><div class="avatar">J</div>
+          <div><b>여행자_J</b><div class="cap">3시간 전 · 코스 완주</div></div></div>
+        <div class="f-photo"><svg viewBox="0 0 340 200" preserveAspectRatio="xMidYMid slice">
+          <defs><linearGradient id="fp1" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#EFD3A4"/><stop offset=".55" stop-color="#DDA96B"/><stop offset="1" stop-color="#B0703F"/></linearGradient></defs>
+          <rect width="340" height="200" fill="url(#fp1)"/>
+          <circle cx="258" cy="54" r="19" fill="#FBEFD2"/>
+          <path d="M0 144 Q80 132 170 142 T340 138 L340 200 L0 200 Z" fill="#8A5E33" opacity=".5"/>
+          <g stroke="#6E4826" stroke-width="2.4" fill="#6E4826" stroke-linecap="round">
+            <path d="M40 200 C44 154 36 132 48 106" fill="none"/><ellipse cx="49" cy="100" rx="3.4" ry="11" transform="rotate(10 49 100)"/>
+            <path d="M78 200 C78 160 86 140 79 118" fill="none"/><ellipse cx="79" cy="112" rx="3.2" ry="10" transform="rotate(-7 79 112)"/>
+            <path d="M116 200 C120 164 113 146 124 124" fill="none"/><ellipse cx="125" cy="118" rx="3.2" ry="10" transform="rotate(12 125 118)"/>
+            <path d="M290 200 C293 168 287 152 296 134" fill="none"/><ellipse cx="297" cy="128" rx="3" ry="9" transform="rotate(9 297 128)"/>
+          </g>
+          <path d="M150 200 L176 126 L186 126 L226 200" fill="#5C3D22" opacity=".55"/>
+          <path d="M158 182 h56 M166 162 h44 M172 145 h34" stroke="#4A3019" stroke-width="3" opacity=".5"/>
+        </svg></div>
+        <div class="f-text">순천만 갈대밭이 이 시기에 이렇게 예쁜지 몰랐어요. 오후 4시쯤 가면 빛이 진짜 좋아요. 국가정원 동문 입구가 덜 붐빕니다.</div>
+        <div class="f-course"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>순천만 하루 코스 · 6곳 · 9시간 48분</div>
+        <div class="f-react">
+          <div><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>24</div>
+          <div><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>3</div>
+        </div>
+      </div>
+      <div class="f-item">
+        <div class="f-top"><div class="avatar">M</div>
+          <div><b>순천토박이_M</b><div class="cap">어제 · 장소 추천</div></div></div>
+        <div class="f-text">문화의거리 근처에 새로 생긴 '오래된 미래'라는 카페인데, 원도심 골목 코스에 넣으면 좋겠어요. 주인분이 순천 옛날 사진을 벽에 전시해놓으셔서 분위기가 남달라요.</div>
+        <div class="f-react">
+          <div><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>41</div>
+          <div><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>7</div>
+        </div>
+      </div>
+      <div class="f-item">
+        <div class="f-top"><div class="avatar">K</div>
+          <div><b>나들이_K</b><div class="cap">2일 전 · 코스 완주</div></div></div>
+        <div class="f-photo"><svg viewBox="0 0 340 200" preserveAspectRatio="xMidYMid slice">
+          <defs><linearGradient id="fp2" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#D8E4CE"/><stop offset="1" stop-color="#EFEBDB"/></linearGradient></defs>
+          <rect width="340" height="200" fill="url(#fp2)"/>
+          <ellipse cx="110" cy="206" rx="150" ry="70" fill="#7E9A6B"/>
+          <ellipse cx="266" cy="212" rx="120" ry="58" fill="#8FAC7A"/>
+          <path d="M30 182 Q110 132 196 178 M56 160 Q110 126 172 156" stroke="#6E8A5D" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <circle cx="110" cy="120" r="6" fill="#5C7A4C"/>
+          <path d="M0 70 L340 50" stroke="#B7C4A6" stroke-width="4" opacity=".8"/>
+          <rect x="196" y="40" width="42" height="22" rx="11" fill="#fff" stroke="#9AAA88" stroke-width="2"/>
+        </svg></div>
+        <div class="f-text">아이랑 둘이 갔는데 동선이 무리 없어서 좋았어요. 다만 습지에서 국가정원 이동할 때 스카이큐브 줄이 좀 길었어요. 30분 정도 대기했습니다.</div>
+        <div class="f-course"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>순천만 하루 코스 · 4곳 · 7시간 30분</div>
+        <div class="f-react">
+          <div><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>18</div>
+          <div><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>5</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="screen" id="s-me">
+    <div class="sbar"><span>9:41</span>
+      <div class="ic"><svg viewBox="0 0 24 24"><path d="M2 9c5.5-5.5 14.5-5.5 20 0l-2 2c-4.4-4.4-11.6-4.4-16 0zm4 4c3.3-3.3 8.7-3.3 12 0l-2 2c-2.2-2.2-5.8-2.2-8 0zm4 4l2 2 2-2c-1.1-1.1-2.9-1.1-4 0z"/></svg>
+      <svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="1.5"/></svg></div></div>
+    <div class="p-head">
+      <div class="p-avatar"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+      <b>test@ongil.com</b><div class="cap">성인</div>
+    </div>
+    <div class="p-stats">
+      <div class="p-stat"><b>3</b><div class="cap">완주 코스</div></div>
+      <div class="p-stat"><b>12</b><div class="cap">방문 장소</div></div>
+      <div class="p-stat"><b>28.4</b><div class="cap">총 km</div></div>
+    </div>
+    <div class="p-menu">
+      <div class="p-group">내 기록</div>
+      <div class="p-row"><span>내 코스 기록</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+      <div class="p-row"><span>저장한 장소</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+      <div class="p-row"><span>위치정보 이용내역</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+      <div class="p-row"><span>위치 기록 삭제</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+      <div class="p-group">약관·정책</div>
+      <div class="p-row"><span>개인정보처리방침</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+      <div class="p-row"><span>이용약관</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+      <div class="p-row"><span>위치기반서비스 이용약관</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+      <div class="p-row"><span>위치 동의 철회</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+      <div class="p-group">지원</div>
+      <div class="p-row"><span>고객지원</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+      <div class="p-row"><span>신고하기</span><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+      <div class="logout">로그아웃</div>
+      <div class="p-row" style="border:none"><span style="color:#C4463A;font-size:13.5px">계정 삭제</span></div>
+      <div style="font-size:10.5px;color:var(--faint);padding-bottom:8px">계정을 삭제하면 여행 기록, 피드백, 방문 기록이 함께 삭제되며 복구할 수 없습니다.</div>
+    </div>
+  </div>
+
+  <div class="nav" id="nav">
+    <div class="nav-item on" data-s="s-home">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>홈</span></div>
+    <div class="nav-item" data-s="s-course">
+      <svg viewBox="0 0 24 24"><path d="M9 20l-5.5-2.5v-13L9 7m0 13l6-3m-6 3V7m6 10l5.5 2.5v-13L15 4m0 13V4M9 7l6-3"/></svg><span>코스</span></div>
+    <div class="nav-item" data-s="s-food">
+      <svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><path d="M6 1v3M10 1v3M14 1v3"/></svg><span>맛집</span></div>
+    <div class="nav-item" data-s="s-feed">
+      <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>피드</span></div>
+    <div class="nav-item" data-s="s-me">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>프로필</span></div>
+  </div>
+  <div class="pill"></div>
+</div></div>
+
+<!-- ════════ 04 코스 마법사 ════════ -->
+<div class="col"><div class="tag">04 · 코스 생성 마법사 1/5</div>
+<div class="phone">
+  <div class="screen static on">
+    <div class="sbar"><span>9:41</span>
+      <div class="ic"><svg viewBox="0 0 24 24"><path d="M2 9c5.5-5.5 14.5-5.5 20 0l-2 2c-4.4-4.4-11.6-4.4-16 0zm4 4c3.3-3.3 8.7-3.3 12 0l-2 2c-2.2-2.2-5.8-2.2-8 0zm4 4l2 2 2-2c-1.1-1.1-2.9-1.1-4 0z"/></svg>
+      <svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="1.5"/></svg></div></div>
+    <div class="wiz-top">
+      <div class="back" style="margin:0;width:34px;height:34px"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+      <div class="wiz-track"><div class="wiz-fill"></div></div>
+      <div class="wiz-step">1/5</div>
+    </div>
+    <div class="wiz-brand">길이음 여행</div>
+    <div class="wiz-toggle"><div class="on">간편 추천</div><div>맞춤 설정</div></div>
+    <div class="wiz-q">어디서 출발하세요?</div>
+    <div class="wiz-opts">
+      <div class="wopt on">순천역
+        <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+      <div class="wopt">순천시청</div>
+      <div class="wopt">문화의거리</div>
+      <div class="wopt">아랫장</div>
+      <div class="wopt">국가정원</div>
+      <div class="wopt">현재 위치</div>
+    </div>
+    <div class="wiz-note">입력 정보는 추천 제공과 서비스 운영·개선에 처리되며<br>자세한 내용은 <u>개인정보처리방침</u>에서 확인할 수 있습니다.</div>
+  </div>
+  <div class="pill"></div>
+</div></div>
+
+<!-- ════════ 05 로딩 ════════ -->
+<div class="col"><div class="tag">05 · AI 코스 추천 로딩</div>
+<div class="phone">
+  <div class="load-wrap">
+    <div class="sbar"><span>9:41</span>
+      <div class="ic"><svg viewBox="0 0 24 24"><path d="M2 9c5.5-5.5 14.5-5.5 20 0l-2 2c-4.4-4.4-11.6-4.4-16 0zm4 4c3.3-3.3 8.7-3.3 12 0l-2 2c-2.2-2.2-5.8-2.2-8 0zm4 4l2 2 2-2c-1.1-1.1-2.9-1.1-4 0z"/></svg>
+      <svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="1.5"/></svg></div></div>
+    <div class="load-center">
+      <svg class="crane" viewBox="0 0 74 74" fill="none">
+        <path d="M14 44 C24 30 40 28 50 32 C58 35 62 42 60 48 C57 56 44 58 34 54 C26 51 18 49 14 44Z"
+              stroke="#C25E3A" stroke-width="2.4" stroke-linejoin="round"/>
+        <path d="M50 32 C54 24 62 20 68 21 C64 26 60 30 58 35" stroke="#C25E3A" stroke-width="2.4" stroke-linejoin="round"/>
+        <path d="M34 54 C32 60 28 64 22 66" stroke="#C25E3A" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M40 54 C40 60 38 64 34 68" stroke="#C25E3A" stroke-width="2.4" stroke-linecap="round"/>
+        <circle cx="63" cy="24" r="1.6" fill="#C25E3A"/>
+        <path d="M30 36 C36 33 44 33 50 36" stroke="#C25E3A" stroke-width="1.6" opacity=".45" stroke-linecap="round"/>
+      </svg>
+      <div class="load-msg" id="lmsg">순천의 오늘 날씨까지 계산하고 있어요</div>
+      <div class="load-bar"><div class="load-fill"></div></div>
+    </div>
+  </div>
+  <div class="pill"></div>
+</div></div>
+
+<!-- ════════ 06 코스 결과 (지도) ════════ -->
+<div class="col"><div class="tag">06 · 코스 결과 — 지도 + 요약</div>
+<div class="phone">
+  <div class="map-wrap">
+    <div class="map-bg">
+      <svg viewBox="0 0 390 560" preserveAspectRatio="xMidYMid slice">
+        <rect width="390" height="560" fill="#F1EEE6"/>
+        <!-- 물 -->
+        <path d="M0 430 C60 414 100 424 130 450 C160 476 150 520 120 560 L0 560 Z" fill="#DCE6E4"/>
+        <!-- 녹지 -->
+        <ellipse cx="300" cy="120" rx="90" ry="66" fill="#E3EAD9"/>
+        <ellipse cx="90" cy="230" rx="70" ry="52" fill="#E3EAD9"/>
+        <ellipse cx="330" cy="420" rx="66" ry="50" fill="#E9EDDD"/>
+        <!-- 도로 -->
+        <g stroke="#fff" stroke-width="7" fill="none" stroke-linecap="round">
+          <path d="M-10 340 C80 320 180 350 400 300"/>
+          <path d="M60 -10 C90 120 110 300 90 570"/>
+          <path d="M250 -10 C240 150 260 340 230 570"/>
+          <path d="M-10 160 C120 150 260 170 400 150"/>
+        </g>
+        <g stroke="#E4DFD4" stroke-width="2.5" fill="none">
+          <path d="M-10 240 C110 232 250 250 400 230"/>
+          <path d="M160 -10 C168 160 158 340 172 570"/>
+          <path d="M330 -10 C324 180 336 380 320 570"/>
+          <path d="M-10 440 C130 420 260 452 400 420"/>
+        </g>
+        <!-- 경로 -->
+        <path d="M62 96 C110 130 150 128 170 176 C190 224 150 240 178 286 C206 330 268 316 292 356 C314 392 296 428 258 452"
+              stroke="#C25E3A" stroke-width="3" fill="none" stroke-dasharray="7 6" stroke-linecap="round"/>
+        <!-- 핀 -->
+        <g font-family="Pretendard,sans-serif" font-size="11" font-weight="700" text-anchor="middle">
+          <g><circle cx="62" cy="96" r="13" fill="#1C1519"/><text x="62" y="100" fill="#fff">1</text></g>
+          <g><circle cx="170" cy="176" r="13" fill="#C25E3A"/><text x="170" y="180" fill="#fff">2</text></g>
+          <g><circle cx="178" cy="286" r="13" fill="#C25E3A"/><text x="178" y="290" fill="#fff">3</text></g>
+          <g><circle cx="292" cy="356" r="13" fill="#C25E3A"/><text x="292" y="360" fill="#fff">4</text></g>
+          <g><circle cx="258" cy="452" r="13" fill="#C25E3A"/><text x="258" y="456" fill="#fff">5</text></g>
+          <g><circle cx="118" cy="128" r="13" fill="#C25E3A"/><text x="118" y="132" fill="#fff">6</text></g>
+        </g>
+      </svg>
+    </div>
+    <div class="sbar"><span>9:41</span>
+      <div class="ic"><svg viewBox="0 0 24 24"><path d="M2 9c5.5-5.5 14.5-5.5 20 0l-2 2c-4.4-4.4-11.6-4.4-16 0zm4 4c3.3-3.3 8.7-3.3 12 0l-2 2c-2.2-2.2-5.8-2.2-8 0zm4 4l2 2 2-2c-1.1-1.1-2.9-1.1-4 0z"/></svg>
+      <svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="1.5"/></svg></div></div>
+    <div class="map-top">
+      <button class="map-btn"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <div class="map-title">순천 맞춤 추천 코스</div>
+      <button class="map-btn"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
+    </div>
+    <div class="sheet">
+      <div class="grab"></div>
+      <h2>코스 요약</h2>
+      <div class="desc">혼자 즐기는 성인(19~64세) 맞춤 1일 코스입니다. 혼합 테마로 6곳을 방문하며 총 10시간 44분 예상됩니다.</div>
+      <div class="stat3">
+        <div><b>10시간 44분</b><div class="cap">예상 시간</div></div>
+        <div><b>20.7 km</b><div class="cap">이동 거리</div></div>
+        <div><b>6곳</b><div class="cap">방문 장소</div></div>
+      </div>
+      <div class="why">
+        <div class="cap">왜 이 코스인가</div>
+        <p>성인 모드: 180분마다 10분 휴식, 밥 3~5곳, 이동속도 1.0x 기준</p>
+        <p>성인 페이스로 이동 효율과 방문 밀도를 균형 있게 맞췄습니다.</p>
+      </div>
+      <div class="warn">
+        <svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+        밤늦은 시간에는 안전한 시내 위주로 이동하세요.
+      </div>
+      <button class="btn-start">
+        <svg viewBox="0 0 24 24"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+        코스 시작</button>
+    </div>
+  </div>
+  <div class="pill"></div>
+</div></div>
+
+<script>
+  const nav = document.getElementById('nav');
+  function go(id){
+    document.querySelectorAll('#app .screen').forEach(s => s.classList.remove('on'));
+    document.getElementById(id).classList.add('on');
+    nav.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('on', n.dataset.s === id));
+  }
+  nav.addEventListener('click', e => {
+    const item = e.target.closest('.nav-item');
+    if (item) go(item.dataset.s);
+  });
+  document.querySelectorAll('[data-go]').forEach(el =>
+    el.addEventListener('click', () => go(el.dataset.go)));
+
+  const msgs = ['순천의 오늘 날씨까지 계산하고 있어요','걸어서 갈 수 있는 동선을 짜고 있어요','사람 덜 붐비는 시간대를 찾고 있어요'];
+  let i = 0;
+  const el = document.getElementById('lmsg');
+  setInterval(() => {
+    el.style.opacity = 0;
+    setTimeout(() => { i = (i + 1) % msgs.length; el.textContent = msgs[i]; el.style.opacity = 1; }, 300);
+  }, 3000);
+</script>
+
+</body>
+</html>
