@@ -1,11 +1,17 @@
 import { useCallback, useState } from 'react'
-import { KEYWORDS, semesterLabel } from '../data/standard.js'
+import { ENTRY_YEARS } from '../data/curriculum.js'
+import { KEYWORDS, guessEntryYear, semesterLabel } from '../data/standard.js'
 
-const KEY = 'donghak.profile.v3'
+const KEY = 'donghak.profile.v4'
 
-export function emptyProfile(grade = 1) {
+function validYear(y, grade) {
+  return ENTRY_YEARS.includes(Number(y)) ? Number(y) : Math.max(ENTRY_YEARS[0], Math.min(ENTRY_YEARS[ENTRY_YEARS.length - 1], guessEntryYear(grade)))
+}
+
+export function emptyProfile(grade = 1, entryYear) {
   return {
     grade,
+    entryYear: validYear(entryYear, grade),
     semester: semesterLabel(grade),
     interests: [],
     goal: '아직 없음',
@@ -23,7 +29,8 @@ function load() {
     const raw = localStorage.getItem(KEY)
     if (!raw) return null
     const p = JSON.parse(raw)
-    return p && p.credits && Array.isArray(p.timetable) ? { ...emptyProfile(p.grade), ...p } : null
+    if (!(p && p.credits && Array.isArray(p.timetable))) return null
+    return { ...emptyProfile(p.grade, p.entryYear), ...p, entryYear: validYear(p.entryYear, p.grade) }
   } catch {
     return null
   }
@@ -35,7 +42,7 @@ function fromLink() {
     const raw = new URLSearchParams(window.location.search).get('p')
     if (!raw) return null
     const p = JSON.parse(decodeURIComponent(escape(atob(raw))))
-    return { ...emptyProfile(p.grade || 1), ...p, onboarded: true }
+    return { ...emptyProfile(p.grade || 1, p.entryYear), ...p, entryYear: validYear(p.entryYear, p.grade || 1), onboarded: true }
   } catch {
     return null
   }
@@ -60,8 +67,18 @@ export function useProfile() {
     })
   }, [])
 
-  /** 학년만 바꾼다. 학점·시간표는 사용자가 넣은 값이므로 건드리지 않는다. */
-  const setGrade = useCallback((grade) => update({ grade, semester: semesterLabel(grade) }), [update])
+  /** 학년만 바꾼다. 학점·시간표는 사용자가 넣은 값이므로 건드리지 않는다. 입학년도는 아직 손대지 않았으면 추정값으로 따라간다. */
+  const setGrade = useCallback(
+    (grade) =>
+      update((prev) => ({
+        grade,
+        semester: semesterLabel(grade),
+        entryYear: prev.entryYearTouched ? prev.entryYear : validYear(guessEntryYear(grade), grade),
+      })),
+    [update],
+  )
+
+  const setEntryYear = useCallback((entryYear) => update((prev) => ({ entryYear: validYear(entryYear, prev.grade), entryYearTouched: true })), [update])
 
   const learn = useCallback(
     (text) => {
@@ -81,5 +98,5 @@ export function useProfile() {
     setProfileState(emptyProfile(1))
   }, [])
 
-  return { profile, update, setGrade, learn, reset }
+  return { profile, update, setGrade, setEntryYear, learn, reset }
 }

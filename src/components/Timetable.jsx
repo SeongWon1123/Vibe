@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { CURRICULUM, plannedFor } from '../data/curriculum.js'
+import { getCurriculum, plannedFor } from '../data/curriculum.js'
 import { DAYS, PERIODS, periodLabel } from '../data/standard.js'
 import { curriculumCheck, thisSemesterCredits } from '../lib/audit.js'
 
@@ -41,9 +41,9 @@ export function CurriculumCard({ profile, onAsk }) {
   const chk = curriculumCheck(profile)
   return (
     <div className="record">
-      <div className="cap">교육과정 대조 · {profile.semester} 기준</div>
+      <div className="cap">교육과정 대조 · {profile.entryYear}학번 {profile.semester} 기준</div>
       {profile.timetable.length === 0 ? (
-        <p className="p-note" style={{ padding: '4px 0 0' }}>시간표를 넣으면 전공필수 누락·선수과목·학점 부담을 교육과정표와 대조해 줘요.</p>
+        <p className="p-note" style={{ padding: '4px 0 0' }}>시간표를 넣으면 전공필수 누락·배치 학년·학점 부담을 {profile.entryYear}학년도 교육과정표와 대조해 줘요.</p>
       ) : (
         <ul className="lines">
           {chk.lines.map((l) => (
@@ -65,7 +65,8 @@ export default function Timetable({ profile, update, onDone }) {
   const [draft, setDraft] = useState({ name: '', credits: 3, day: '월', start: 1, end: 2 })
   const list = profile.timetable
   const planned = thisSemesterCredits(list)
-  const suggestions = plannedFor(profile.grade, 2).filter((c) => !list.some((r) => r.name === c.name))
+  const courses = getCurriculum(profile.entryYear).courses
+  const suggestions = plannedFor(profile.grade, 2, profile.entryYear).filter((c) => !list.some((r) => r.name === c.name))
 
   function add(e) {
     e?.preventDefault()
@@ -73,7 +74,7 @@ export default function Timetable({ profile, update, onDone }) {
     if (!name) return
     const start = Number(draft.start)
     const end = Math.max(start, Number(draft.end))
-    const known = CURRICULUM.find((c) => c.name === name)
+    const known = courses.find((c) => c.name === name)
     update({ timetable: [...list, { name, credits: Number(draft.credits) || known?.credits || 0, day: draft.day, start, end }] })
     setDraft({ ...draft, name: '' })
   }
@@ -101,12 +102,22 @@ export default function Timetable({ profile, update, onDone }) {
       </div>
 
       <form className="paste" onSubmit={add} style={{ paddingTop: 20 }}>
-        <label htmlFor="course">과목 추가</label>
+        <label htmlFor="course">과목 추가 · 교양·타과 과목도 이름 그대로 넣으면 돼요</label>
         <div className="tt-form">
-          <input id="course" className="in" list="curriculum" placeholder="과목명 (교육과정표에서 자동완성)" value={draft.name} onChange={(e) => { const known = CURRICULUM.find((c) => c.name === e.target.value); setDraft({ ...draft, name: e.target.value, credits: known ? known.credits : draft.credits }) }} />
+          <input
+            id="course"
+            className="in"
+            list="curriculum"
+            placeholder={`과목명 (${profile.entryYear}학번 전공표 자동완성)`}
+            value={draft.name}
+            onChange={(e) => {
+              const known = courses.find((c) => c.name === e.target.value)
+              setDraft({ ...draft, name: e.target.value, credits: known ? known.credits : draft.credits })
+            }}
+          />
           <datalist id="curriculum">
-            {CURRICULUM.map((c) => (
-              <option key={c.name} value={c.name} />
+            {courses.map((c) => (
+              <option key={c.code} value={c.name} />
             ))}
           </datalist>
           <input className="in sm" type="number" min="0" max="6" aria-label="학점" value={draft.credits} onChange={(e) => setDraft({ ...draft, credits: e.target.value })} />
@@ -139,10 +150,10 @@ export default function Timetable({ profile, update, onDone }) {
         </div>
         {suggestions.length > 0 && (
           <div className="chips" style={{ marginTop: 10 }}>
-            <span className="unit">이 학기 배치 과목:</span>
+            <span className="unit">{profile.grade}학년 2학기 배치 전공:</span>
             {suggestions.map((c) => (
-              <button key={c.name} type="button" className="fchip" onClick={() => setDraft({ ...draft, name: c.name, credits: c.credits })}>
-                {c.name} · {c.type}
+              <button key={c.code} type="button" className="fchip" onClick={() => setDraft({ ...draft, name: c.name, credits: c.credits })}>
+                {c.name} · {c.required ? '전필' : '전선'}
               </button>
             ))}
           </div>

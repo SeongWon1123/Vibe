@@ -90,7 +90,7 @@
   <h2>학기마다 나를 더 알아가는 AI 학사 메이트</h2>
   <div class="cols3">
     <div class="card soft"><div class="cap">01</div><b>성향·관심 파악</b><p>학년·관심·목표를 넣고 상담할수록 관심 키워드가 쌓인다. 1~2학년은 탐색, 3~4학년은 자격증·인턴·포트폴리오로 방향을 잡아 준다.</p></div>
-    <div class="card soft"><div class="cap">02</div><b>학점 관리 + 시간표 → 교육과정 대조</b><p>이수 학점과 시간표를 직접 넣으면 교육과정표와 대조해 전공필수 누락·선수과목·학점 부담을 짚고, 졸업 130학점까지 남은 학점을 계산.</p></div>
+    <div class="card soft"><div class="cap">02</div><b>학점 관리 + 시간표 → 교육과정 대조</b><p>이수 학점과 시간표를 직접 넣으면 내 학번의 교육과정표(2021~2026)와 대조해 전공필수 누락·권장 학년·학점 부담을 짚고, 학번별 졸업기준(130/140학점)까지 남은 학점을 계산.</p></div>
     <div class="card soft"><div class="cap">03</div><b>공지 → 캘린더</b><p>학과 공지를 붙여 넣으면 접수 마감만 뽑아 .ics로 저장. 하루 전 알림 포함.</p></div>
   </div>
   <p class="lead" style="margin-top:40px">챗봇 FAQ가 아니라, <b>내가 넣은 학점·시간표·관심</b>을 근거로 물어본 것에만 답하는 메이트. 선배 톤과 친구 톤 중 고를 수 있다.</p>
@@ -156,7 +156,7 @@
   <table>
     <tr><th>구성</th><th>방식</th></tr>
     <tr><td><b>학생 프로필</b></td><td>학년·관심·목표·학점·시간표·관심 키워드. 브라우저 localStorage에만 저장</td></tr>
-    <tr><td><b>교육과정표</b></td><td>학년-학기별 과목·학점·구분·선수과목을 구조화해 시스템 프롬프트에 주입. 시간표 대조 결과도 함께 전달 (벡터DB 없음)</td></tr>
+    <tr><td><b>교육과정표</b></td><td>국립순천대 2021~2026학년도 교육과정 PDF에서 인공지능공학(부/전공) 전공표·졸업기준을 추출(pdfplumber). 입학년도별로 시스템 프롬프트에 주입, 시간표 대조 결과도 함께 전달</td></tr>
     <tr><td><b>캘린더</b></td><td>.ics 표준 직접 생성 — TZID Asia/Seoul, 1시간 이벤트, 하루 전 VALARM</td></tr>
     <tr><td><b>안전장치</b></td><td>IP당 분당 10회, 20초 타임아웃 + 재시도, 키 없으면 로컬 규칙 답변으로 대체</td></tr>
   </table>
@@ -168,8 +168,8 @@
   <div class="eyebrow">데모의 경계</div>
   <h2>진짜로 구현한 것과 연출한 것</h2>
   <div class="cols">
-    <div class="card"><div class="cap">진짜</div><ul class="list"><li>LLM 상담 — 실제 API 호출, 학년별로 다른 답</li><li>.ics 생성 — 폰·PC 캘린더에 실제 등록</li><li>학점·시간표 입력 → 교육과정표 대조 피드백</li><li>공지 마감일 추출 — 규칙 + LLM 이중 확인</li><li>선배 / 메이트 두 가지 말투</li></ul></div>
-    <div class="card soft"><div class="cap">연출</div><ul class="list"><li>교육과정표·학사일정·공지 — 학과 공개 정보를 참고한 샘플</li><li>교육과정 — 학과 공개 정보를 참고한 샘플</li><li>로그인·학사시스템 연동 — 없음</li></ul></div>
+    <div class="card"><div class="cap">진짜</div><ul class="list"><li>LLM 상담 — 실제 API 호출, 학년별로 다른 답</li><li>.ics 생성 — 폰·PC 캘린더에 실제 등록</li><li>학점·시간표 입력 → 2021~2026 학교 교육과정표(입학년도별)와 대조 피드백</li><li>공지 마감일 추출 — 규칙 + LLM 이중 확인</li><li>선배 / 메이트 두 가지 말투</li></ul></div>
+    <div class="card soft"><div class="cap">연출</div><ul class="list"><li>학사일정·공지 — 샘플</li><li>교육과정 — 학과 공개 정보를 참고한 샘플</li><li>로그인·학사시스템 연동 — 없음</li></ul></div>
   </div>
   <p class="lead" style="margin-top:30px">실서비스에는 본인 인증과 학사시스템(향림통) 연동이 필요하다. 답변은 참고용이며 최종 확인은 학과 사무실.</p>
   <div class="brand"><span class="mark">同</span>동학</div><div class="num">8 / 10</div>
@@ -200,7 +200,7 @@
   <h1 style="margin-top:60px">동학 同學</h1>
   <p class="lead" style="margin-top:20px">폰으로 열면 앱처럼, PC로 열면 폰 프레임으로.<br>학년·관심·학점·시간표를 넣고 "이번 학기에 뭘 해야 할까?"를 물어보세요.</p>
   <div class="url" style="margin-top:44px;color:#F0B279">https://donghak.vercel.app</div>
-  <p class="lead" style="margin-top:34px;font-size:16px">소스: github.com/SeongWon1123/Vibe · 교육과정·일정·공지는 샘플</p>
+  <p class="lead" style="margin-top:34px;font-size:16px">소스: github.com/SeongWon1123/Vibe · 교육과정표는 학교 2021~2026 교육과정 기준, 일정·공지는 샘플</p>
   <div class="brand"><span class="mark">同</span>동학 · 국립순천대학교 인공지능공학부 · 최성원</div>
   <div class="num">10 / 10</div>
 </section>

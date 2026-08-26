@@ -32,3 +32,10 @@ dist-ssr
 shot-*.png
 .vercel
 .env*
+
+# raw curriculum sources (not committed)
+data/curriculum/*
+!data/curriculum/README.md
+
+!data/curriculum/parse.py
+!data/curriculum/convert.py

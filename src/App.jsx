@@ -29,7 +29,7 @@ function readDeepLink() {
 
 export default function App() {
   const [link] = useState(readDeepLink)
-  const { profile, update, setGrade, learn, reset } = useProfile()
+  const { profile, update, setGrade, setEntryYear, learn, reset } = useProfile()
   const applied = useRef(false)
   if (!applied.current) {
     applied.current = true
@@ -49,7 +49,7 @@ export default function App() {
           <Intro onboarded={profile.onboarded} onStart={() => setScreen('onboard')} onContinue={() => setScreen('home')} />
         )}
         {screen === 'onboard' && (
-          <Onboarding profile={profile} setGrade={setGrade} update={update} onDone={(withTimetable) => setScreen(withTimetable ? 'timetable' : 'home')} onBack={() => setScreen('intro')} />
+          <Onboarding profile={profile} setGrade={setGrade} setEntryYear={setEntryYear} update={update} onDone={(withTimetable) => setScreen(withTimetable ? 'timetable' : 'home')} onBack={() => setScreen('intro')} />
         )}
         {screen === 'timetable' && <Timetable profile={profile} update={update} onDone={() => setScreen('home')} />}
         {TABS.has(screen) && (
@@ -58,6 +58,7 @@ export default function App() {
             profile={profile}
             update={update}
             setGrade={setGrade}
+            setEntryYear={setEntryYear}
             learn={learn}
             reset={reset}
             mode={mode}
@@ -81,7 +82,7 @@ export default function App() {
 }
 
 /** 학년 하나의 세션. 학년이 바뀌면 key로 리마운트되어 대화가 새로 시작된다. */
-function Session({ profile, update, setGrade, learn, reset, mode, screen, setScreen, noticeDraft, setNoticeDraft, editCredits, setEditCredits, initialAsk }) {
+function Session({ profile, update, setGrade, setEntryYear, learn, reset, mode, screen, setScreen, noticeDraft, setNoticeDraft, editCredits, setEditCredits, initialAsk }) {
   const chat = useChat(profile, mode, learn)
   const asked = useRef(false)
 
@@ -140,6 +141,7 @@ function Session({ profile, update, setGrade, learn, reset, mode, screen, setScr
           profile={profile}
           update={update}
           setGrade={setGrade}
+          setEntryYear={setEntryYear}
           onChangeMode={changeMode}
           onEditTimetable={() => setScreen('timetable')}
           startEditing={editCredits}

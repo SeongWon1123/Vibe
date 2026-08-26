@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { CURRICULUM } from '../data/curriculum.js'
+import { getCurriculum } from '../data/curriculum.js'
 import { KNOWLEDGE } from '../data/knowledge.js'
 import { audit, curriculumCheck } from '../lib/audit.js'
 import { parseIcsPayload } from '../lib/ics.js'
@@ -34,11 +34,14 @@ export function buildSystemPrompt(profile, mode = 'senior') {
     이번학기_신청학점: a.planned,
     예상누적학점: a.entered ? a.expected : '학점 미입력',
     졸업까지_남은것: a.entered ? a.missing : '학점 미입력',
+    입학년도_교육과정: profile.entryYear,
+    졸업기준: a.grad,
     교육과정_대조: {
-      교육과정에_있는_과목: chk.matched.map((m) => `${m.name}(${m.type}, ${m.grade}학년 ${m.semester}학기 배치)`),
-      교육과정표에_없는_과목: chk.unknown,
-      이번학기_배치인데_시간표에_없는_과목: chk.missingPlanned.map((c) => `${c.name}(${c.type})`),
-      선수과목_확인: chk.prereq.map((p) => `${p.name} <- ${p.requires.join(', ')}`),
+      교육과정에_있는_과목: chk.matched.map((m) => `${m.name}(${m.type}, ${(m.years || []).join('·')}학년 ${m.semester ?? '?'}학기 배치)`),
+      전공표에_없는_과목_교양이나_타과일_수_있음: chk.unknown,
+      권장학년이_다른_과목: chk.offYear.map((m) => `${m.name}(${m.years.join('·')}학년)`),
+      이번학기_배치인데_시간표에_없는_과목: chk.missingPlanned.map((c) => `${c.name}(${c.required ? '전필' : '전선'})`),
+      전공필수_전체: chk.requiredAll.map((c) => `${c.name}(${(c.years || []).join('·')}학년)`),
       학점부담: chk.load,
     },
   }
@@ -49,8 +52,8 @@ ${TONE[mode] || TONE.senior}
 [학생 프로필 — 학생이 직접 입력한 값]
 ${JSON.stringify(summary, null, 2)}
 
-[교육과정표 — 학년-학기 과목 학점 구분]
-${curriculumTable()}
+[교육과정표 — 학생의 입학년도 기준, 학교 교육과정 PDF에서 추출]
+${curriculumTable(profile.entryYear)}
 
 [학사 지식베이스]
 ${KNOWLEDGE}
@@ -58,10 +61,10 @@ ${KNOWLEDGE}
 [응답 규칙 — 가장 중요]
 1. **물어본 것에만 답한다.** 묻지 않은 졸업요건·다른 과목·일반적 조언을 덧붙이지 않는다. 마무리 인사·"추가로 궁금한 점" 같은 말도 쓰지 않는다.
 2. 프로필(시간표·학점·관심·목표)을 근거로 구체적으로. 프로필에 없는 이수 과목을 지어내지 않는다.
-   시간표·수강·과목 질문에는 반드시 [교육과정표]와 교육과정_대조 결과를 근거로 답한다 — 전공필수 누락, 선수과목, 배치 학기, 학점 부담을 짚는다.
+   시간표·수강·과목 질문에는 반드시 [교육과정표]와 교육과정_대조 결과를 근거로 답한다 — 전공필수 누락, 권장 학년·학기, 학점 부담을 짚는다. 전공표에 없는 과목은 교양·타과 과목일 수 있으니 단정하지 말고 확인을 권한다.
    학점이 미입력이면 숫자를 추정하지 말고 내 정보에서 입력하라고 안내한다.
 3. 1~2학년에게는 관심 분야를 넓히는 방향, 3~4학년에게는 자격증·인턴·포트폴리오·취업/대학원 준비 방향으로 답한다.
-4. 졸업요건은 물어볼 때만, 위 프로필의 학점 숫자를 그대로 써서 계산한다. 공인영어성적은 졸업 필수 요건이 아니다.
+4. 졸업요건은 물어볼 때만, 위 프로필의 학점 숫자와 졸업기준(입학년도별)을 그대로 써서 계산한다. 공인영어성적은 졸업 필수 요건이 아니다.
 5. 공지를 붙여넣고 저장/캘린더를 말하면 접수·신청·제출 마감일 기준으로 마지막 줄에만:
    [ICS]{"title":"행사명","date":"YYYY-MM-DD","time":"HH:MM","location":"장소"}[/ICS]
 6. 한국어, 150~250자. 목록이 필요할 때만 마크다운 목록. 모르면 지어내지 말고 학과 사무실 확인을 권한다.`

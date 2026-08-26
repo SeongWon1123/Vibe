@@ -1,10 +1,12 @@
 import { useState } from 'react'
-import { GOALS, GRAD, INTERESTS } from '../data/standard.js'
+import { ENTRY_YEARS } from '../data/curriculum.js'
+import { GOALS, INTERESTS, gradOf } from '../data/standard.js'
 import { audit } from '../lib/audit.js'
 import { MODES } from '../lib/urgency.js'
 
-export default function Profile({ profile, update, setGrade, onChangeMode, onEditTimetable, onReset, startEditing = false }) {
+export default function Profile({ profile, update, setGrade, setEntryYear, onChangeMode, onEditTimetable, onReset, startEditing = false }) {
   const a = audit(profile)
+  const grad = gradOf(profile)
   const [editing, setEditing] = useState(startEditing || !a.entered)
   const [credits, setCredits] = useState({
     total: profile.credits.total || '',
@@ -31,7 +33,7 @@ export default function Profile({ profile, update, setGrade, onChangeMode, onEdi
       <div className="p-head">
         <div className="p-avatar">{profile.grade}</div>
         <b>{profile.semester}</b>
-        <div className="cap">인공지능공학부 · {profile.goal}</div>
+        <div className="cap">인공지능공학부 · {String(profile.entryYear).slice(2)}학번 · {profile.goal}</div>
       </div>
       <div className="p-stats">
         <div className="p-stat">
@@ -49,12 +51,12 @@ export default function Profile({ profile, update, setGrade, onChangeMode, onEdi
       </div>
 
       <div className="p-menu">
-        <div className="p-group">학점 관리</div>
+        <div className="p-group">학점 관리 · {profile.entryYear}학년도 교육과정 기준</div>
         {editing ? (
           <div className="fields" style={{ padding: '4px 0 8px' }}>
-            <Field label={`총 이수학점 / ${GRAD.total}`} value={credits.total} onChange={(v) => setCredits({ ...credits, total: v })} />
-            <Field label={`전공 / ${GRAD.major}`} value={credits.major} onChange={(v) => setCredits({ ...credits, major: v })} />
-            <Field label={`교양 / ${GRAD.general}`} value={credits.general} onChange={(v) => setCredits({ ...credits, general: v })} />
+            <Field label={`총 이수학점 / ${grad.total}`} value={credits.total} onChange={(v) => setCredits({ ...credits, total: v })} />
+            <Field label={`전공 / ${grad.major} (필수 ${grad.majorRequired} + 선택 ${grad.majorElective})`} value={credits.major} onChange={(v) => setCredits({ ...credits, major: v })} />
+            <Field label={`교양 / ${grad.general}${grad.generalMax !== grad.general ? `~${grad.generalMax}` : ''}`} value={credits.general} onChange={(v) => setCredits({ ...credits, general: v })} />
             <div className="row" style={{ display: 'flex', gap: 8 }}>
               {a.entered && (
                 <button type="button" className="btn-outline" onClick={() => setEditing(false)}>취소</button>
@@ -65,9 +67,9 @@ export default function Profile({ profile, update, setGrade, onChangeMode, onEdi
           </div>
         ) : (
           <>
-            <Bar label="총 이수" value={profile.credits.total} max={GRAD.total} extra={a.planned} />
-            <Bar label="전공" value={profile.credits.major} max={GRAD.major} />
-            <Bar label="교양" value={profile.credits.general} max={GRAD.general} />
+            <Bar label="총 이수" value={profile.credits.total} max={grad.total} extra={a.planned} />
+            <Bar label="전공" value={profile.credits.major} max={grad.major} />
+            <Bar label="교양" value={profile.credits.general} max={grad.general} />
             <button type="button" className="p-row" onClick={() => { setCredits({ total: profile.credits.total || '', major: profile.credits.major || '', general: profile.credits.general || '' }); setEditing(true) }}>
               <span>학점 수정</span>
               <small>향림통 성적 기준</small>
@@ -127,14 +129,24 @@ export default function Profile({ profile, update, setGrade, onChangeMode, onEdi
             ))}
           </div>
         </div>
-        <div className="p-note" style={{ paddingTop: 4 }}>학년을 바꿔도 학점·시간표는 그대로예요. 교육과정 대조 기준만 바뀌고, 대화는 새로 시작돼요.</div>
+        <div className="p-row" style={{ alignItems: 'flex-start' }}>
+          <span style={{ paddingTop: 6 }}>학번</span>
+          <div className="chips" style={{ justifyContent: 'flex-end' }}>
+            {ENTRY_YEARS.map((y) => (
+              <button key={y} type="button" className={profile.entryYear === y ? 'fchip on' : 'fchip'} style={{ padding: '6px 10px', fontSize: 12 }} onClick={() => setEntryYear(y)}>
+                {String(y).slice(2)}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="p-note" style={{ paddingTop: 4 }}>학년·학번을 바꿔도 학점·시간표는 그대로예요. 교육과정 대조와 졸업기준만 그 학번 것으로 바뀌고, 학년을 바꾸면 대화는 새로 시작돼요.</div>
         <button type="button" className="p-row" onClick={onReset}>
           <span style={{ color: 'var(--dusk-deep)' }}>처음부터 다시 설정</span>
         </button>
 
         <div className="p-group">안내</div>
         <div className="p-note">
-          입력한 정보는 이 기기 브라우저에만 저장돼요. 동학은 국립순천대학교 인공지능공학부 학생이 만든 바이브코딩 경진대회 출품작이며, 교육과정표·학사일정·공지는 샘플이에요. 답변은 참고용이고 최종 확인은 학과 사무실에서 해주세요.
+          입력한 정보는 이 기기 브라우저에만 저장돼요. 교육과정표와 졸업기준은 국립순천대학교 2021~2026학년도 교육과정에서 가져왔고, 학사일정·공지는 샘플이에요. 동학은 인공지능공학부 학생이 만든 바이브코딩 경진대회 출품작이며, 답변은 참고용이고 최종 확인은 학과 사무실에서 해주세요.
         </div>
       </div>
     </div>

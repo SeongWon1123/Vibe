@@ -1,6 +1,6 @@
 import { ddayLabel, upcoming, weekOfTerm } from '../data/calendar.js'
 import { noticesFor } from '../data/notices.js'
-import { GRAD, PORTFOLIO, nextSteps, quickQuestions } from '../data/standard.js'
+import { PORTFOLIO, nextSteps, quickQuestions } from '../data/standard.js'
 import { audit } from '../lib/audit.js'
 import Mark from './Mark.jsx'
 import Scene from './Scene.jsx'
@@ -71,13 +71,13 @@ export default function Home({ profile, update, onAsk, onGoChat, onOpenNotice, o
           </div>
           <div>
             <b>
-              {profile.credits.total} / {GRAD.total}학점
+              {profile.credits.total} / {a.grad.total}학점
             </b>
             <div className="meta">
               이번 학기 +{a.planned} → 예상 {a.expected} · 남은 {a.remaining}학점
             </div>
             <div className="rate">
-              전공 {profile.credits.major}/{GRAD.major} · 교양 {profile.credits.general}/{GRAD.general}
+              전공 {profile.credits.major}/{a.grad.major} · 교양 {profile.credits.general}/{a.grad.general} · {String(profile.entryYear).slice(2)}학번 기준
             </div>
           </div>
           <button type="button" className="resume" onClick={() => onAsk('졸업까지 뭐가 남았어?')}>

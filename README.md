@@ -10,7 +10,7 @@
 | 기능 | 설명 |
 |---|---|
 | 성향·관심 파악 | 온보딩(학년·관심·목표) + 상담 키워드로 프로필이 자라고, 학년별 '다음 한 걸음' 제안 |
-| 학점 관리 · 시간표 | 학점·시간표 직접 입력 → 교육과정표와 대조(전필 누락·선수과목·학점 부담), 졸업까지 남은 학점 계산 |
+| 학점 관리 · 시간표 | 학점·시간표 직접 입력 → 입학년도별 실제 교육과정표(2021~2026)와 대조(전필 누락·권장 학년·학점 부담), 학번별 졸업기준으로 남은 학점 계산 |
 | 선배 / 메이트 모드 | 말투 선택. 물어본 것에만 답함 |
 | 공지 → 캘린더 | 학과 공지를 붙여 넣으면 접수 마감만 뽑아 `.ics` 다운로드 (하루 전 알림 포함) |
 
@@ -44,7 +44,8 @@ src/App.jsx          화면 상태(intro/onboard/timetable/home/chat/notice/me)
 src/hooks/useProfile.js 학년·관심·목표·학점·시간표·키워드 (localStorage)
 src/hooks/useChat.js 대화 상태 + 시스템 프롬프트 조립
 src/components/      Intro, Onboarding, Timetable, Home, Chat, Notice, Profile, TabBar, Scene
-src/data/            curriculum.js (교육과정표 · 샘플), standard.js (다음 한 걸음), calendar.js, notices.js, knowledge.js
+src/data/            curriculum.js (교육과정표 2021~2026 · data/curriculum/convert.py가 생성), standard.js, calendar.js, notices.js, knowledge.js
+data/curriculum/     교육과정 PDF 원본(비공개) + parse.py/convert.py 추출 스크립트
 src/lib/             audit.js (학점 계산 · 교육과정 대조), ics.js, notice.js (마감일 추출), urgency.js (로컬 답변)
 docs/                계획 문서 00~07, 제출 문구, 디자인 참고 시안
 submission/          대표 이미지 · 발표자료 PDF 소스
@@ -54,4 +55,4 @@ submission/          대표 이미지 · 발표자료 PDF 소스
 
 Vercel. 환경변수 `LLM_API_KEY`, `LLM_BASE_URL`, `LLM_MODEL`을 Production에 등록하면 끝.
 
-※ 교육과정·학사일정·공지는 샘플이다. 실서비스에는 본인 인증과 학사시스템 연동이 필요하다.
+※ 교육과정표·졸업기준은 학교 2021~2026학년도 교육과정 PDF에서 추출했다(2025-1학기 판은 폰트 문제로 2025-2학기 판 사용). 학사일정·공지는 샘플이다. 실서비스에는 본인 인증과 학사시스템 연동이 필요하다.

@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { GOALS, GRAD, INTERESTS } from '../data/standard.js'
+import { ENTRY_YEARS } from '../data/curriculum.js'
+import { GOALS, INTERESTS, gradOf } from '../data/standard.js'
 import { MODES } from '../lib/urgency.js'
 
 const STEPS = ['학년', '관심', '목표', '학점', '말투']
@@ -17,7 +18,7 @@ function n(v) {
   return Number.isFinite(x) && x >= 0 ? Math.min(200, Math.round(x)) : 0
 }
 
-export default function Onboarding({ profile, setGrade, update, onDone, onBack }) {
+export default function Onboarding({ profile, setGrade, setEntryYear, update, onDone, onBack }) {
   const [step, setStep] = useState(0)
   const [credits, setCredits] = useState({
     total: profile.credits.total || '',
@@ -25,6 +26,7 @@ export default function Onboarding({ profile, setGrade, update, onDone, onBack }
     general: profile.credits.general || '',
   })
   const last = step === STEPS.length - 1
+  const grad = gradOf(profile)
 
   function commit() {
     update({ credits: { total: n(credits.total), major: n(credits.major), general: n(credits.general) }, onboarded: true })
@@ -75,7 +77,19 @@ export default function Onboarding({ profile, setGrade, update, onDone, onBack }
               </button>
             ))}
           </div>
-          <div className="wiz-note">학년에 맞는 교육과정표로 시간표를 대조해 줘.</div>
+          <div className="wiz-q" style={{ fontSize: 17, paddingTop: 22 }}>입학년도(학번)는?</div>
+          <div className="chips" style={{ padding: '12px 26px 0' }} role="radiogroup" aria-label="입학년도">
+            {ENTRY_YEARS.map((y) => (
+              <button key={y} type="button" role="radio" aria-checked={profile.entryYear === y} className={profile.entryYear === y ? 'fchip on' : 'fchip'} onClick={() => setEntryYear(y)}>
+                {String(y).slice(2)}학번
+              </button>
+            ))}
+          </div>
+          <div className="wiz-note">
+            {profile.entryYear}학년도 {gradOf(profile) ? `교육과정 기준 — 졸업 ${grad.total}학점 · 전공 ${grad.major} · 교양 ${grad.general}` : ''}
+            <br />
+            휴학이 있으면 학번을 직접 골라 줘.
+          </div>
         </>
       )}
 
@@ -114,9 +128,9 @@ export default function Onboarding({ profile, setGrade, update, onDone, onBack }
         <>
           <div className="wiz-q">지금까지 이수한 학점은?</div>
           <div className="fields">
-            <Field label={`총 이수학점 (졸업 ${GRAD.total})`} value={credits.total} onChange={(v) => setCredits({ ...credits, total: v })} />
-            <Field label={`전공 (졸업 ${GRAD.major})`} value={credits.major} onChange={(v) => setCredits({ ...credits, major: v })} />
-            <Field label={`교양 (졸업 ${GRAD.general})`} value={credits.general} onChange={(v) => setCredits({ ...credits, general: v })} />
+            <Field label={`총 이수학점 (졸업 ${grad.total})`} value={credits.total} onChange={(v) => setCredits({ ...credits, total: v })} />
+            <Field label={`전공 (${grad.major} 이상 · 필수 ${grad.majorRequired} + 선택 ${grad.majorElective})`} value={credits.major} onChange={(v) => setCredits({ ...credits, major: v })} />
+            <Field label={`교양 (${grad.general}${grad.generalMax !== grad.general ? `~${grad.generalMax}` : ''})`} value={credits.general} onChange={(v) => setCredits({ ...credits, general: v })} />
           </div>
           <div className="wiz-note">향림통 성적 조회의 숫자를 그대로 적으면 돼. 모르면 비워 두고 나중에 내 정보에서 넣어도 돼.</div>
         </>
@@ -133,7 +147,7 @@ export default function Onboarding({ profile, setGrade, update, onDone, onBack }
               </button>
             ))}
           </div>
-          <div className="wiz-note">다음 화면에서 이번 학기 시간표를 넣으면 교육과정과 대조해 피드백해 줘.</div>
+          <div className="wiz-note">다음 화면에서 이번 학기 시간표를 넣으면 {profile.entryYear}학번 교육과정과 대조해 피드백해 줘.</div>
         </>
       )}
 

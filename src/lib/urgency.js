@@ -54,7 +54,7 @@ ${profile.goal === '취업' ? '지원 직무 키워드를 상단에 두면 눈�
     if (!a.entered) return `학점이 아직 입력 안 됐어. 내 정보에서 총/전공/교양 학점을 넣으면 졸업까지 남은 걸 계산해 줄게.`
     return `입력한 학점 기준으로:
 - 이수 ${profile.credits.total} + 이번 학기 ${a.planned} = 예상 ${a.expected}학점
-- 130학점까지 ${a.remaining}학점 남음
+- 졸업 ${a.grad.total}학점까지 ${a.remaining}학점 남음 (${profile.entryYear}학번 기준)
 ${a.missing.length ? '- ' + a.missing.join('\n- ') : '- 학점 요건은 채워져. 졸업인증·졸업작품만 확인'}`
   }
   if (q.includes('교양')) {
