@@ -11,13 +11,18 @@ const TONE = {
   mate: `[말투] 같은 학기를 함께 굴리는 동기 친구. 편한 반말, "우리", "같이", "~하자". 이모지는 쓰지 않는다.`,
 }
 
-function curriculumTable() {
-  return CURRICULUM.map((c) => {
-    const when = c.grade ? `${c.grade}-${c.semester}` : '교양'
-    const req = c.requires ? ` (선수: ${c.requires.join(',')})` : ''
-    const area = c.area ? ` [${c.area}]` : ''
-    return `${when} ${c.name} ${c.credits}학점 ${c.type}${req}${area}`
-  }).join('\n')
+function curriculumTable(entryYear) {
+  const cur = getCurriculum(entryYear)
+  const rows = cur.courses.map((c) => {
+    const when = `${(c.years || []).join('·') || '?'}학년 ${c.semester ?? '?'}학기`
+    const kind = c.required ? '전필' : c.other ? '타전공인정' : '전선'
+    const extra = `${c.system ? ` · ${c.system}` : ''}${c.capstone ? ' · 캡스톤' : ''}`
+    return `${c.code} ${c.name} ${c.credits}학점 ${kind} [${when}${extra}]`
+  })
+  const g = cur.grad
+  const general = g.generalMax !== g.general ? `${g.general}~${g.generalMax}` : `${g.general}`
+  return `${cur.year}학년도 교육과정 (${cur.dept}) — 졸업 ${g.total}학점, 전공 ${g.major} 이상(필수 ${g.majorRequired} + 선택 ${g.majorElective}), 교양 ${general}
+${rows.join('\n')}`
 }
 
 export function buildSystemPrompt(profile, mode = 'senior') {
